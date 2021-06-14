@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/layout">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#CCCCCC"
+        android:layout_margin="10dp"
+        app:cardCornerRadius="10dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:id="@+id/card">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+            <ImageView
+                android:layout_width="69dp"
+                android:layout_height="69dp"
+                android:scaleType="fitXY"
+                android:src="@mipmap/ic_launcher"
+                android:layout_marginHorizontal="10dp"
+                android:layout_centerVertical="true"
+                android:id="@+id/image"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/image"
+                android:layout_centerVertical="true"
+                android:id="@+id/text"
+                android:layout_toStartOf="@id/download_delete"
+                android:layout_marginHorizontal="10dp"
+                android:textColor="@android:color/black"
+                android:textSize="22sp"
+                android:text="Season 1"/>
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_baseline_arrow_download_24"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:id="@+id/download_delete"
+                android:layout_marginEnd="10dp"/>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
