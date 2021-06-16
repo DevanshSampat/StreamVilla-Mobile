@@ -33,7 +33,7 @@ public class NextVideoActivity extends AppCompatActivity {
     private void countdown(final int i) {
         ((TextView)findViewById(R.id.up_next)).setText("Up Next in "+i);
         if(i==0&&!isCancelled) openVideo(new View(this));
-        else {
+        else if(i>0){
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -47,6 +47,7 @@ public class NextVideoActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(),VideoPlayerActivity.class);
         intent.putExtras(getIntent().getExtras());
         if(!isCancelled) {
+            isCancelled = true;
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
             finish();

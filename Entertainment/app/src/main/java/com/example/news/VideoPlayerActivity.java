@@ -106,6 +106,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
     private boolean activity_start=true;
     private int position=0;
     private boolean complete=false;
+    private long time_hide_show;
     private View decorView;
     private boolean pip=false;
     private boolean lock=false;
@@ -842,10 +843,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                 showControls();
                 seekBar.setMax(videoView.getDuration()/1000);
                 startTimeCounting();
+                time_hide_show = System.currentTimeMillis();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if(!videoView.isPlaying()) return;
+                        if(!videoView.isPlaying()||System.currentTimeMillis()<time_hide_show+5000) return;
                         if(listView.getVisibility()==View.VISIBLE) return;
                         hideControls();
                     }
@@ -914,6 +916,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
             @Override
             public void onClick(View view) {
                 videoView.start();
+                time_hide_show = System.currentTimeMillis();
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 startTimeCounting();
                 findViewById(R.id.play_button).setVisibility(View.GONE);
@@ -930,7 +933,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (videoView.isPlaying()) {
+                        if (videoView.isPlaying()&&System.currentTimeMillis()>=time_hide_show+5000) {
                             listView.setVisibility(View.GONE);
                             hideControls();
                         }
@@ -957,8 +960,20 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
             @Override
             public void onClick(View view) {
                 if(videoView.getCurrentPosition()>=10000) {
+                    time_hide_show = System.currentTimeMillis();
                     videoView.seekTo(videoView.getCurrentPosition() - 10000);
                     findViewById(R.id.rewind).startAnimation(AnimationUtils.loadAnimation(getApplicationContext(),R.anim.anticlockwise));
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.println(Log.ASSERT,"diff",(System.currentTimeMillis()-time_hide_show)+"");
+                            long diff = System.currentTimeMillis()-time_hide_show;
+                            if (videoView.isPlaying()&&diff>=5000) {
+                                listView.setVisibility(View.GONE);
+                                hideControls();
+                            }
+                        }
+                    }, 5000);
                 }
                 if(!videoView.isPlaying()) startTimeCounting();
             }
@@ -967,8 +982,18 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
             @Override
             public void onClick(View view) {
                 if(videoView.getCurrentPosition()<=videoView.getDuration()-10000) {
+                    time_hide_show = System.currentTimeMillis();
                     findViewById(R.id.forward).startAnimation(AnimationUtils.loadAnimation(getApplicationContext(),R.anim.clockwise));
                     videoView.seekTo(videoView.getCurrentPosition() + 10000);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (videoView.isPlaying()&&System.currentTimeMillis()>=time_hide_show+5000) {
+                                listView.setVisibility(View.GONE);
+                                hideControls();
+                            }
+                        }
+                    }, 5000);
                 }
                 if(!videoView.isPlaying()) startTimeCounting();
             }
@@ -1446,10 +1471,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
         final TextView textView = findViewById(R.id.video_title);
         if(textView.getVisibility()==View.GONE) {
             showControls();
+            time_hide_show = System.currentTimeMillis();
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (videoView.isPlaying()&&System.currentTimeMillis()>=time+5000) {
+                    if (videoView.isPlaying()&&System.currentTimeMillis()>=time_hide_show+5000) {
                         hideControls();
                     }
                 }
