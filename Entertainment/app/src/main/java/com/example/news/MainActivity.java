@@ -2165,6 +2165,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.getWindow().setLayout(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         ((TextView)dialog.findViewById(R.id.title)).setText("Entertainment");
+        dialog.findViewById(R.id.watchlist).setVisibility(View.GONE);
         FirebaseDatabase.getInstance().getReference().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot snapshot) {

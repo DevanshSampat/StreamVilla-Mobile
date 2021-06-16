@@ -247,7 +247,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                 dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
                 ((TextView)dialog.findViewById(R.id.title)).setText(contentData[position].getName());
                 ((TextView)dialog.findViewById(R.id.description)).setText(contentData[position].getDate());
-                Picasso.with(context).load(contentData[position].getImage()).into((ImageView)dialog.findViewById(R.id.image));
+                if(contentData[position].getImage().startsWith("http")) Picasso.with(context).load(contentData[position].getImage()).into((ImageView)dialog.findViewById(R.id.image));
+                else ((ImageView)dialog.findViewById(R.id.image)).setImageBitmap(BitmapFactory.decodeFile(contentData[position].getImage()));
                 if(!contentData[position].getLink().contains("(video)")
                         || new File(context.getExternalFilesDir(null),
                         contentData[position].getName().replace(' ','_')
@@ -259,6 +260,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    dialog.findViewById(R.id.watchlist).setVisibility(View.GONE);
                 }
                 try{
                     ArrayList<String> watchList = UserName.getWatchList();
@@ -315,19 +317,21 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                     @Override
                     public void onClick(View view) {
                         dialog.dismiss();
-                        if(!contentData[position].getLink().contains("(video)")) holder.cardView.callOnClick();
+                        if(!contentData[position].getLink().contains("(video)") &&
+                                !new File(context.getExternalFilesDir(null),contentData[position].getName()
+                                .replace(':','_').replace(' ','_')+".mp4").exists()) holder.cardView.callOnClick();
                         else
                         {
                             Intent intent = new Intent(context, VideoPlayerActivity.class);
                             intent.putExtra("name", contentData[position].getName());
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            intent.putExtra("link", contentData[position].getLink().substring("(video)".length()));
+                            if(contentData[position].getLink().contains("(video)")) intent.putExtra("link", contentData[position].getLink().substring("(video)".length()));
                             intent.putExtra("online",true);
                             intent.putExtra("image",contentData[position].getImage());
                             intent.putExtra("movie_db",contentData[position].getDataBaseName());
                             intent.putExtra("description",contentData[position].getDate());
                             printHistory(contentData[position].getName());
-                            new Sync().addToQuickPicks(context, contentData[position].getDataBaseName());
+                            if(contentData[position].getDataBaseName()!=null) new Sync().addToQuickPicks(context, contentData[position].getDataBaseName());
                             if(!new File(context.getFilesDir(),"Tutorial.txt").exists())
                             {
                                 Intent tutorialIntent = new Intent(context,TutorialActivity.class);
