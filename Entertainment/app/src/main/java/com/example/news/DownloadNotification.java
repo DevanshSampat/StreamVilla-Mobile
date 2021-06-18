@@ -215,107 +215,102 @@ public class DownloadNotification {
                                                 .build());
                             }
                             else {
-                                activity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (bytes_total >= bytes_downloaded) {
-                                            time = System.currentTimeMillis();
-                                            if(time-DownloadFileData.getTime()>1000) {
-                                                DownloadFileData.setTime(time);
-                                                DownloadFileData.setSize(bytes_total);
-                                                DownloadFileData.setDownloadedBytes(bytes_downloaded);
-                                            }
-                                            String[] unit = new String[]{"B","KB","MB","GB"};
-                                            String current = "", total = "";
-                                            double down = bytes_downloaded;
-                                            double total_bytes = bytes_total;
-                                            int i=0;
-                                            current="";
-                                            total="";
-                                            while(down>1024&&i<3)
-                                            {
-                                                current = String.valueOf(down/1024.0);
-                                                try {
-                                                    current = current.substring(0, current.indexOf('.') + 3);
-                                                } catch (Exception exception) {
-                                                    exception.printStackTrace();
-                                                }
-                                                down = down/1024;
-                                                i++;
-                                            }
-                                            if(current.length()==0) current="0";
-                                            current = current+" "+unit[i];
-                                            i=0;
-                                            while(total_bytes>1024&&i<3)
-                                            {
-                                                total = String.valueOf(total_bytes/1024.0);
-                                                try {
-                                                    total = total.substring(0, total.indexOf('.') + 3);
-                                                } catch (Exception exception) {
-                                                    exception.printStackTrace();
-                                                }
-                                                total_bytes = total_bytes/1024;
-                                                i++;
-                                            }
-                                            total = total+" "+unit[i];
-                                            if (new File(context.getFilesDir(), "download_id_for_" + name
-                                                    .replace(':', '_').replace(' ', '_') + ".txt").exists()) {
-                                                Intent cancelIntent = new Intent(context, DeleteMovieReceiver.class);
-                                                cancelIntent.putExtra("name", name);
-                                                cancelIntent.putExtra("download_id", String.valueOf(downloadId));
-                                                PendingIntent pendingIntentForCancellation = PendingIntent.getBroadcast(context, 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                                                Intent pauseIntent = new Intent(context,PauseOrResumeMovieDownloadReceiver.class);
-                                                pauseIntent.putExtra("status","pause");
-                                                pauseIntent.putExtra("name",name);
-                                                PendingIntent pendingPauseIntent = PendingIntent.getBroadcast(context,0,pauseIntent,PendingIntent.FLAG_UPDATE_CURRENT);
-                                                if(dark) cancelIntent.putExtra("dark",true);
-                                                Intent intent = new Intent(context, QueuedDownloadsActivity.class);
-                                                intent.putExtra("name", name);
-                                                intent.putExtra("download",true);
-                                                intent.putExtra("open", true);
-                                                intent.putExtra("signed_in", true);
-                                                if (dark) intent.putExtra("dark", true);
-                                                PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                                                String title = name;
-                                                DownloadFileData.setText(current + " / " + total);
-                                                DownloadFileData.setPercent(progress);
-                                                NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "personal")
-                                                        .setOngoing(true)
-                                                        .setContentTitle(title)
-                                                        .setContentText(progress+"%")
-                                                        .setSmallIcon(R.drawable.notification)
-                                                        .setColor(Color.RED)
-                                                        .setContentIntent(pendingIntent)
-                                                        .addAction(R.drawable.notification,"Pause",pendingPauseIntent)
-                                                        .addAction(R.drawable.notification,"Cancel",pendingIntentForCancellation)
-                                                        .setProgress(100, progress, false);
-                                                try{
-                                                    builder.setSubText(DownloadFileData.getTimeLeft()
-                                                            .substring(0,DownloadFileData.getTimeLeft().length()-" remaining".length())+" ("+DownloadFileData.getText()+")");
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
-                                                }
-                                                NotificationManagerCompat.from(context).notify(18, builder.build());
-                                            } else {
-                                                NotificationManagerCompat.from(context).cancel(18);
-                                            }
-                                            if (current.equals(total)) {
-                                                new File(context.getFilesDir(), "download_id_for_" +
-                                                        name.replace(' ', '_').replace(':', '_') + ".txt").delete();
-                                            }
-                                        }
-                                        else{
-                                            NotificationCompat.Builder builder = new NotificationCompat.Builder(context,"personal")
-                                                    .setSmallIcon(R.drawable.notification)
-                                                    .setContentTitle(name)
-                                                    .setContentText("")
-                                                    .setColor(Color.RED)
-                                                    .setOngoing(true)
-                                                    .setProgress(100,0,true);
-                                            NotificationManagerCompat.from(context).notify(18,builder.build());
-                                        }
+                                if (bytes_total >= bytes_downloaded) {
+                                    time = System.currentTimeMillis();
+                                    if(time-DownloadFileData.getTime()>1000) {
+                                        DownloadFileData.setTime(time);
+                                        DownloadFileData.setSize(bytes_total);
+                                        DownloadFileData.setDownloadedBytes(bytes_downloaded);
                                     }
-                                });
+                                    String[] unit = new String[]{"B","KB","MB","GB"};
+                                    String current = "", total = "";
+                                    double down = bytes_downloaded;
+                                    double total_bytes = bytes_total;
+                                    int i=0;
+                                    current="";
+                                    total="";
+                                    while(down>1024&&i<3)
+                                    {
+                                        current = String.valueOf(down/1024.0);
+                                        try {
+                                            current = current.substring(0, current.indexOf('.') + 3);
+                                        } catch (Exception exception) {
+                                            exception.printStackTrace();
+                                        }
+                                        down = down/1024;
+                                        i++;
+                                    }
+                                    if(current.length()==0) current="0";
+                                    current = current+" "+unit[i];
+                                    i=0;
+                                    while(total_bytes>1024&&i<3)
+                                    {
+                                        total = String.valueOf(total_bytes/1024.0);
+                                        try {
+                                            total = total.substring(0, total.indexOf('.') + 3);
+                                        } catch (Exception exception) {
+                                            exception.printStackTrace();
+                                        }
+                                        total_bytes = total_bytes/1024;
+                                        i++;
+                                    }
+                                    total = total+" "+unit[i];
+                                    if (new File(context.getFilesDir(), "download_id_for_" + name
+                                            .replace(':', '_').replace(' ', '_') + ".txt").exists()) {
+                                        Intent cancelIntent = new Intent(context, DeleteMovieReceiver.class);
+                                        cancelIntent.putExtra("name", name);
+                                        cancelIntent.putExtra("download_id", String.valueOf(downloadId));
+                                        PendingIntent pendingIntentForCancellation = PendingIntent.getBroadcast(context, 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                        Intent pauseIntent = new Intent(context,PauseOrResumeMovieDownloadReceiver.class);
+                                        pauseIntent.putExtra("status","pause");
+                                        pauseIntent.putExtra("name",name);
+                                        PendingIntent pendingPauseIntent = PendingIntent.getBroadcast(context,0,pauseIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+                                        if(dark) cancelIntent.putExtra("dark",true);
+                                        Intent intent = new Intent(context, QueuedDownloadsActivity.class);
+                                        intent.putExtra("name", name);
+                                        intent.putExtra("download",true);
+                                        intent.putExtra("open", true);
+                                        intent.putExtra("signed_in", true);
+                                        if (dark) intent.putExtra("dark", true);
+                                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                        String title = name;
+                                        DownloadFileData.setText(current + " / " + total);
+                                        DownloadFileData.setPercent(progress);
+                                        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "personal")
+                                                .setOngoing(true)
+                                                .setContentTitle(title)
+                                                .setContentText(progress+"%")
+                                                .setSmallIcon(R.drawable.notification)
+                                                .setColor(Color.RED)
+                                                .setContentIntent(pendingIntent)
+                                                .addAction(R.drawable.notification,"Pause",pendingPauseIntent)
+                                                .addAction(R.drawable.notification,"Cancel",pendingIntentForCancellation)
+                                                .setProgress(100, progress, false);
+                                        try{
+                                            builder.setSubText(DownloadFileData.getTimeLeft()
+                                                    .substring(0,DownloadFileData.getTimeLeft().length()-" remaining".length())+" ("+DownloadFileData.getText()+")");
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                        NotificationManagerCompat.from(context).notify(18, builder.build());
+                                    } else {
+                                        NotificationManagerCompat.from(context).cancel(18);
+                                    }
+                                    if (current.equals(total)) {
+                                        new File(context.getFilesDir(), "download_id_for_" +
+                                                name.replace(' ', '_').replace(':', '_') + ".txt").delete();
+                                    }
+                                }
+                                else{
+                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context,"personal")
+                                            .setSmallIcon(R.drawable.notification)
+                                            .setContentTitle(name)
+                                            .setContentText("")
+                                            .setColor(Color.RED)
+                                            .setOngoing(true)
+                                            .setProgress(100,0,true);
+                                    NotificationManagerCompat.from(context).notify(18,builder.build());
+                                }
                             }
                         } catch (Exception exception) {
                             downloading = false;

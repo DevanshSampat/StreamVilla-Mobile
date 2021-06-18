@@ -528,7 +528,8 @@ public class ContentDisplayActivity extends AppCompatActivity {
             }
             ContentAdapter contentAdapter = new ContentAdapter(contentData, ContentDisplayActivity.this, dark);
             contentAdapter.setAnimate(false);
-            recyclerView.setAdapter(contentAdapter);
+            if(recyclerView.getAdapter()==null) recyclerView.setAdapter(contentAdapter);
+            else ((ContentAdapter)recyclerView.getAdapter()).setContentData(contentData);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
