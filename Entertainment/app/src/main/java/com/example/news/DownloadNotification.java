@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +57,12 @@ public class DownloadNotification {
         this.context = context;
         this.activity = activity;
         this.dark = dark;
+        if(DownloadFileData.getText()==null) DownloadFileData.setText("Starting Download");
+        Intent intent = new Intent(context,RemainingDownloadService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        }
+        else context.startService(intent);
         isPaused = new File(context.getFilesDir(),"isPaused.txt").exists();
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -336,7 +343,10 @@ public class DownloadNotification {
             while((content=br.readLine())!=null) {
                 other = other + content + "\n";
             }
-            if(str==null) return;
+            if(str==null) {
+                context.sendBroadcast(new Intent("STOP_DOWNLOAD_SERVICE"));
+                return;
+            }
             String name = str;
             name = name.substring(0,name.indexOf('\t'));
             String link = str;
@@ -346,6 +356,7 @@ public class DownloadNotification {
             fileOutputStream.write(other.getBytes());
             fileOutputStream.close();
         } catch (FileNotFoundException e) {
+            context.sendBroadcast(new Intent("STOP_DOWNLOAD_SERVICE"));
             return;
         } catch (IOException e) {
             e.printStackTrace();
