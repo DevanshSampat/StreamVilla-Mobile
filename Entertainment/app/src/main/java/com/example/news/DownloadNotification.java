@@ -58,11 +58,6 @@ public class DownloadNotification {
         this.activity = activity;
         this.dark = dark;
         if(DownloadFileData.getText()==null) DownloadFileData.setText("Starting Download");
-        Intent intent = new Intent(context,RemainingDownloadService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent);
-        }
-        else context.startService(intent);
         isPaused = new File(context.getFilesDir(),"isPaused.txt").exists();
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -88,6 +83,11 @@ public class DownloadNotification {
             br = new BufferedReader(new InputStreamReader(fis));
             try{
                 downloadId = Long.parseLong(br.readLine());
+                Intent intent = new Intent(context,RemainingDownloadService.class);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent);
+                }
+                else context.startService(intent);
             } catch (NumberFormatException e) {
                 return;
             } catch (IOException e) {

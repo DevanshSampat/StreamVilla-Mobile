@@ -58,6 +58,13 @@ public class RemainingDownloadService extends Service {
     private void checkDownloadNotification() {
         if(new File(getApplicationContext().getFilesDir(),"isDownloading.txt").exists()&&DownloadFileData.getText()==null)
             new DownloadNotification().generateDownloadNotification(getApplicationContext(),null,new Theme(getApplicationContext()).isInDarkMode());
+        else if(!new File(getApplicationContext().getFilesDir(),"isDownloading.txt").exists()) {
+            try {
+                stopForeground(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

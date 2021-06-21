@@ -1866,7 +1866,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
                     intent.setFlags(Intent.FLAG_RECEIVER_FOREGROUND);
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 6 * AlarmManager.INTERVAL_HOUR, pendingIntent);
+                    alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
                     String str = "";
                     if (hour < 10) str = str + "0";
                     str = str + hour + ":";
