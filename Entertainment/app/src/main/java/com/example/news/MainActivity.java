@@ -25,6 +25,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -820,13 +821,14 @@ public class MainActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = getPackageManager().getLaunchIntentForPackage("com.google.android.gm");
-                if(intent!=null)
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.setComponent(new ComponentName("com.google.android.gm","com.google.android.gm.GmailActivity"));
+                try
                 {
                     startActivity(intent);
                     finish();
                 }
-                else
+                catch (Exception e)
                 {
                     Intent web = new Intent(MainActivity.this,WebActivity.class);
                     web.putExtra("link","https://mail.google.com");
@@ -2102,10 +2104,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sendFeedback(View view) {
-        Intent intent = new Intent(getApplicationContext(),SendFeedbackActivity.class);
-        if(dark) intent.putExtra("dark",true);
-        startActivity(intent);
-        overridePendingTransition(R.anim.zoom_in_bottom,R.anim.fade_out);
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setComponent(new ComponentName("com.devansh.talkative","com.devansh.talkative.activities.MainActivity"));
+        intent.putExtra("email_id","team.entertainment108@gmail.com");
+        try{
+            startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(this, "Install Talk-A-Tive app for feedback", Toast.LENGTH_SHORT).show();
+            Intent talkativeIntent = new Intent(this,WebActivity.class);
+            talkativeIntent.putExtra("link","https://drive.google.com/drive/folders/1QFoRHHc70aJVnlIDlvDBBCq3LP2IvF03?usp=sharing");
+            startActivity(talkativeIntent);
+        }
     }
     @Override
     protected void onRestart() {
