@@ -130,5 +130,5 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="10dp"
-        android:onClick="sendMail" />
+        android:onClick="sendMessage" />
 </RelativeLayout>

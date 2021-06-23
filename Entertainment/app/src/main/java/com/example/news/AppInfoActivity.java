@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -71,12 +72,19 @@ public class AppInfoActivity extends AppCompatActivity {
             }
         });
     }
-    public void sendMail(View v)
+    public void sendMessage(View v)
     {
-        Intent i = new Intent(this,SendFeedbackActivity.class);
-        if(dark) i.putExtra("dark",true);
-        startActivity(i);
-        overridePendingTransition(R.anim.zoom_in_bottom,R.anim.fade_out);
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setComponent(new ComponentName("com.devansh.talkative","com.devansh.talkative.activities.MainActivity"));
+        intent.putExtra("email_id","team.entertainment108@gmail.com");
+        try{
+            startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(this, "Install Talk-A-Tive app for feedback", Toast.LENGTH_SHORT).show();
+            Intent talkativeIntent = new Intent(this,WebActivity.class);
+            talkativeIntent.putExtra("link","https://drive.google.com/drive/folders/1QFoRHHc70aJVnlIDlvDBBCq3LP2IvF03?usp=sharing");
+            startActivity(talkativeIntent);
+        }
     }
 
     public void shareApp(View v)
