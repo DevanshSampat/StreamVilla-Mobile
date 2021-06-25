@@ -75,6 +75,13 @@ public class ContentDisplayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content_display);
         searchText = findViewById(R.id.search_text);
+        if(getIntent().hasExtra("offline")) findViewById(R.id.clear_space).setVisibility(View.VISIBLE);
+        findViewById(R.id.clear_space).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(),DeleteMultipleVideosActivity.class));
+            }
+        });
         String headline;
         if (getIntent().getStringExtra("content_type").equals("comedy")) headline = "TV show";
         else {
