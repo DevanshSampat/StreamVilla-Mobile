@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,18 +27,51 @@ public class DeleteMultipleVideosActivity extends AppCompatActivity {
 
     private ArrayList<File> fileArrayList;
     private RecyclerView recyclerView;
-    private BroadcastReceiver broadcastReceiver;
+    private BroadcastReceiver deletedFileReceiver;
+    private BroadcastReceiver sizeReceiver;
+    private BroadcastReceiver checkAllReceiver;
+    private boolean checkAll;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_multiple);
-        broadcastReceiver = new BroadcastReceiver() {
+        deletedFileReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 getAllVideos();
             }
         };
-        registerReceiver(broadcastReceiver,new IntentFilter("FILES_DELETED"));
+        checkAllReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                checkAll = true;
+                ((CheckBox)findViewById(R.id.select_all)).setChecked(intent.getStringExtra("all").equals("true"));
+                checkAll = false;
+            }
+        };
+        sizeReceiver = new BroadcastReceiver() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                double size = (double) Long.parseLong(intent.getStringExtra("size"));
+                size = size/(1024*1024);
+                String unit = "MB";
+                if(size>1024){
+                    size = size/1024;
+                    unit = "GB";
+                }
+                String tempString = size+"";
+                try{
+                    tempString = tempString.substring(0,tempString.indexOf('.')+3);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                ((TextView)findViewById(R.id.delete_text)).setText("Free up "+tempString+" "+unit);
+            }
+        };
+        registerReceiver(checkAllReceiver,new IntentFilter("SELECT_ALL"));
+        registerReceiver(sizeReceiver,new IntentFilter("DELETE_VIDEO_SIZE"));
+        registerReceiver(deletedFileReceiver,new IntentFilter("FILES_DELETED"));
         fileArrayList = new ArrayList<>();
         if(new Theme(this).isInDarkMode()) {
             findViewById(R.id.layout).setBackgroundColor(Color.BLACK);
@@ -52,6 +86,10 @@ public class DeleteMultipleVideosActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 try {
+                    if(checkAll){
+                        checkAll = false;
+                        return;
+                    }
                     ((DeleteVideoAdapter)recyclerView.getAdapter()).setDeleteAll(b);
                 } catch (Exception e) {
                     e.printStackTrace();

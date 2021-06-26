@@ -23,6 +23,7 @@ public class DeleteVideoAdapter extends RecyclerView.Adapter<DeleteVideoAdapter.
     private ArrayList<File> fileArrayList;
     private Context context;
     private boolean[] delete;
+    private long size;
     public DeleteVideoAdapter(ArrayList<File> fileArrayList) {
         this.fileArrayList = fileArrayList;
         delete = new boolean[fileArrayList.size()];
@@ -49,13 +50,33 @@ public class DeleteVideoAdapter extends RecyclerView.Adapter<DeleteVideoAdapter.
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean check) {
                 delete[position] = check;
+                size = 0;
+                boolean checkAll = true;
+                for(int i=0;i<fileArrayList.size();i++){
+                    if(delete[i]) {
+                        size = size + fileArrayList.get(i).length();
+                    }
+                    else checkAll = false;
+                }
+                Intent intent = new Intent("DELETE_VIDEO_SIZE");
+                intent.putExtra("size",size+"");
+                context.sendBroadcast(intent);
+                context.sendBroadcast(new Intent("SELECT_ALL").putExtra("all",checkAll+""));
             }
         });
         ((CheckBox)holder.itemView.findViewById(R.id.checkbox)).setChecked(delete[position]);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((CheckBox)holder.itemView.findViewById(R.id.checkbox)).setChecked(!((CheckBox)holder.itemView.findViewById(R.id.checkbox)).isChecked());
+            }
+        });
     }
 
     public void setFileArrayList(ArrayList<File> fileArrayList) {
         this.fileArrayList = fileArrayList;
+        setDeleteAll(false);
+        notifyDataSetChanged();
     }
     public void setDeleteAll(boolean delete){
         for(int i=0;i<this.delete.length;i++)
