@@ -45,6 +45,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_splash);
         CastContext castContext = CastContext.getSharedInstance(this);
         time=System.currentTimeMillis();
@@ -59,11 +60,6 @@ public class SplashActivity extends AppCompatActivity {
             return;
         }
         getMessage();
-        TextView textView = (TextView) findViewById(R.id.name);
-        Animation animation = AnimationUtils.loadAnimation(this, R.anim.up_start);
-        ImageView imageView = (ImageView) findViewById(R.id.icon);
-        imageView.startAnimation(animation);
-        textView.startAnimation(animation);
     }
     private void getMessage()
     {

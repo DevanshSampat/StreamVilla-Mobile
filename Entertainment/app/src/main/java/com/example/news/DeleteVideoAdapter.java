@@ -2,6 +2,7 @@ package com.example.news;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,14 +40,23 @@ public class DeleteVideoAdapter extends RecyclerView.Adapter<DeleteVideoAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull DeleteVideoAdapter.ViewHolder holder, int position) {
-        ((TextView)holder.itemView.findViewById(R.id.text)).setText(
-                fileArrayList.get(position).getName().substring(0,fileArrayList.get(position).getName().length()-".mp4".length())
-                .replace("___"," : ").replace('_',' ')
-        );
+        String name = fileArrayList.get(position).getName().substring(0,fileArrayList.get(position).getName().length()-".mp4".length())
+                .replace("___"," : ").replace('_',' ');
+        ((TextView)holder.itemView.findViewById(R.id.text)).setText(name);
         if(new Theme(context).isInDarkMode()) {
             ((TextView)holder.itemView.findViewById(R.id.text)).setTextColor(Color.WHITE);
             ((CheckBox)holder.itemView.findViewById(R.id.checkbox)).setBackgroundColor(Color.WHITE);
         }
+        String path = "/storage/emulated/0/android/data/com.example.news/files/";
+        if(new File(path+name.replace(' ','_').replace(':','_')+".jpg").exists())
+            ((ImageView)holder.itemView.findViewById(R.id.image)).setImageBitmap(BitmapFactory.decodeFile(path+name.replace(' ','_').replace(':','_')+".jpg"));
+        else
+            try{
+                ((ImageView)holder.itemView.findViewById(R.id.image)).setImageBitmap(BitmapFactory.decodeFile(path+"image_for_"+
+                        name.substring(0,name.lastIndexOf(':')-1).replace(' ','_').replace(':','_')+".jpg"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         ((CheckBox)holder.itemView.findViewById(R.id.checkbox)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean check) {
@@ -75,6 +86,7 @@ public class DeleteVideoAdapter extends RecyclerView.Adapter<DeleteVideoAdapter.
 
     public void setFileArrayList(ArrayList<File> fileArrayList) {
         this.fileArrayList = fileArrayList;
+        delete = new boolean[fileArrayList.size()];
         setDeleteAll(false);
         notifyDataSetChanged();
     }

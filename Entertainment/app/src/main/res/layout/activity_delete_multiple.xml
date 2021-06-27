@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="22sp"
-            android:id="@+id/text"
+            android:id="@+id/text_select"
             android:layout_marginEnd="10dp"
             android:text="Select all"/>
 

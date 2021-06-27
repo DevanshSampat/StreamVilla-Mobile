@@ -54,6 +54,10 @@ public class DeleteMultipleVideosActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 double size = (double) Long.parseLong(intent.getStringExtra("size"));
+                if(size==0){
+                    ((TextView)findViewById(R.id.delete_text)).setText("Select items to delete");
+                    return;
+                }
                 size = size/(1024*1024);
                 String unit = "MB";
                 if(size>1024){
@@ -76,12 +80,18 @@ public class DeleteMultipleVideosActivity extends AppCompatActivity {
         if(new Theme(this).isInDarkMode()) {
             findViewById(R.id.layout).setBackgroundColor(Color.BLACK);
             findViewById(R.id.select_all).setBackgroundColor(Color.WHITE);
-            ((TextView)findViewById(R.id.text)).setTextColor(Color.WHITE);
+            ((TextView)findViewById(R.id.text_select)).setTextColor(Color.WHITE);
         }
         recyclerView = findViewById(R.id.recycle);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         getAllVideos();
+        findViewById(R.id.text_select).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((CheckBox)findViewById(R.id.select_all)).setChecked(!((CheckBox)findViewById(R.id.select_all)).isChecked());
+            }
+        });
         ((CheckBox)findViewById(R.id.select_all)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
