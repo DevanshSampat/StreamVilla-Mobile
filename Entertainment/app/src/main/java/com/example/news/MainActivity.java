@@ -72,10 +72,12 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -214,13 +216,19 @@ public class MainActivity extends AppCompatActivity {
         userType = "";
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestIdToken(getString(R.string.google_sign_in_auth))
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this,gso);
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if(account!=null)
         {
             Button btn = (Button) findViewById(R.id.sign_out_button);
-            signIn();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    signIn();
+                }
+            }).start();
             btn.setVisibility(View.VISIBLE);
             getInformation();
         }
@@ -236,7 +244,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 findViewById(R.id.show_quick_and_trending).setVisibility(View.GONE);
                 clicked = true;
-                checkUserType();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkUserType();
+                    }
+                }).start();
             }
         });
         findViewById(R.id.profile_info).setOnClickListener(new View.OnClickListener() {
@@ -750,8 +763,8 @@ public class MainActivity extends AppCompatActivity {
 
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
-            validate();
             getInformation();
+            firebaseAuthWithGoogle(acct.getIdToken());
             if (getIntent().hasExtra("search"))
             {
                 Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
@@ -761,84 +774,13 @@ public class MainActivity extends AppCompatActivity {
                 if (dark) intent.putExtra("dark", true);
                 startActivity(intent);
             }
-            auth = FirebaseAuth.getInstance();
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w("Google", "signInResult:failed code=" + e.getStatusCode());
         }
     }
-    private void updateUserDetails()
-    {
-        auth = FirebaseAuth.getInstance();
-        user= auth.getCurrentUser();
-        try {
-
-            while (user == null) {
-                user = auth.getCurrentUser();
-            }
-            UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder().setDisplayName(name).build();
-            user.updateProfile(profile);
-        }
-        catch (Exception e)
-        {
-            updateUserDetails();
-        }
-    }
-    public void verify(View v)
-    {
-        verifyEmailAddress();
-    }
-    private void verifyEmailAddress()
-    {
-        auth = FirebaseAuth.getInstance();
-        user= auth.getCurrentUser();
-        try {
-            while (user == null) {
-                user = auth.getCurrentUser();
-            }
-            UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder().setDisplayName(name).build();
-            user.updateProfile(profile);
-            if(user.getDisplayName()==null)
-            {
-                user.updateProfile(profile);
-            };
-        }
-        catch (Exception e)
-        {
-            verifyEmailAddress();
-        }
-        if(user.getDisplayName()==null)
-        {
-            try {
-                Thread.sleep(300);
-            }
-            catch (Exception e){}
-            user.sendEmailVerification();
-        }
-        else user.sendEmailVerification();
-        Toast.makeText(this, "Verification email sent to " + user.getEmail()+"\nRe-Launch the app after verification", Toast.LENGTH_LONG).show();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.setComponent(new ComponentName("com.google.android.gm","com.google.android.gm.GmailActivity"));
-                try
-                {
-                    startActivity(intent);
-                    finish();
-                }
-                catch (Exception e)
-                {
-                    Intent web = new Intent(MainActivity.this,WebActivity.class);
-                    web.putExtra("link","https://mail.google.com");
-                    startActivity(web);
-                    finish();
-                }
-            }
-        }, 1000);
-    }
-
+    public void verify(View v) {}
     private void getInformation()
     {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
@@ -857,7 +799,24 @@ public class MainActivity extends AppCompatActivity {
             Picasso.with(this).load(String.valueOf(url)).into(imageView);
         }
     }
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        auth = FirebaseAuth.getInstance();
+        auth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            user=auth.getCurrentUser();
+                            clicked=true;
+                            first=true;
+                            Log.println(Log.ASSERT,"status","signed in");
+                            validate();
+                            // Sign in success, update UI with the signed-in user's information
+                        }
+                    }
+                });
+    }
     private void validate()
     {
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
@@ -869,45 +828,13 @@ public class MainActivity extends AppCompatActivity {
             UserName.setUsername(getApplicationContext(),acct.getEmail());
             auth = FirebaseAuth.getInstance();
             name = acct.getDisplayName();
-            Toast.makeText(this, "Signed in as " + acct.getEmail(), Toast.LENGTH_SHORT).show();
-            auth.createUserWithEmailAndPassword((acct.getEmail()), "12345678").addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull final Task<AuthResult> task) {
-                    while(user==null)
-                    {
-                        user=auth.getCurrentUser();
-                    }
-                    GoogleSignInAccount acc2 = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
-                    UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder().setDisplayName(acc2.getDisplayName()).build();
-                    user.updateProfile(profile);
-                    if(user.getDisplayName()==null)
-                    {
-                        user.updateProfile(profile);
-                        Toast.makeText(MainActivity.this,user.getDisplayName(),Toast.LENGTH_SHORT);
-                        popup("Setting up your credentials");
-                    }
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (task.isSuccessful()) {
-                                verifyEmailAddress();
-                            } else if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                updateUserDetails();
-                            }
-                        }
-                    },1500);
-
-
-                }
-            });
-            auth.signInWithEmailAndPassword(acct.getEmail(), "12345678");
             user=auth.getCurrentUser();
-            new Handler().postDelayed(new Runnable() {
+            new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    if(user!=null) checkUserType();
+                    if (user != null) checkUserType();
                 }
-            },1000);
+            }).start();
             if (acct.getEmail().equals("devansh.sampat@gmail.com")) {
                 Button btn = (Button) findViewById(R.id.add_content);
                 btn.setVisibility(View.VISIBLE);
@@ -970,12 +897,12 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(intent);
                             sendIntroductoryNotification(600000);
                         }
-                        new Handler().postDelayed(new Runnable() {
+                        new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 makeTimeFiles();
                             }
-                        },1000);
+                        }).start();
                     }
                     else makeWatchTimingsFile();
                     Button btn = (Button) findViewById(R.id.beta);
@@ -1007,12 +934,12 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         }, 500);
-                        new Handler().postDelayed(new Runnable() {
+                        new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 uploadUserDetails();
                             }
-                        }, 1000);
+                        }).start();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -1043,18 +970,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        documentReference.get().addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.println(Log.ASSERT,"doc","failed");
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        uploadUserDetails();
-                    }
-                }, 1000);
-             }
-        });
         documentReference = firestore.collection("Data").document("Trending");
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -1080,7 +995,6 @@ public class MainActivity extends AppCompatActivity {
     }
     private void uploadUserDetails()
     {
-        if(user==null) return;
         String history="";
         try {
             if(online_history.trim().length()==0) history = local_history;
@@ -1108,7 +1022,12 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
             Log.println(Log.ASSERT,"error",e.toString());
-            checkUserType();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    checkUserType();
+                }
+            }).start();
             return;
         }
         firestore = FirebaseFirestore.getInstance();
@@ -1141,7 +1060,12 @@ public class MainActivity extends AppCompatActivity {
         userInfo.put("Watchlist",watchList);
         UserName.setQuickPicks(quick_picks);
         UserName.setWatchlist(watchList);
-        documentReference.set(userInfo);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                documentReference.set(userInfo);
+            }
+        }).start();
         //findViewById(R.id.show_quick_and_trending).setVisibility(View.VISIBLE);
         if(first)
         {
@@ -1300,14 +1224,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void openActivity(View v)
     {
-        if(user!=null&&!user.isEmailVerified())
-        {
-            Toast.makeText(this,"Verify your email first",Toast.LENGTH_SHORT).show();
-            TextView textView = (TextView) findViewById(R.id.verify);
-            textView.setVisibility(View.VISIBLE);
-            return;
-        }
-        else if(user==null)
+        if(user==null)
         {
             signIn();
             return;
@@ -2014,37 +1931,31 @@ public class MainActivity extends AppCompatActivity {
             FileOutputStream fos = openFileOutput("UserWatchTimings.txt",MODE_PRIVATE);
             fos.write(movie_watch_session_times.getBytes());
             fos.close();
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        FileInputStream fis = openFileInput("UserWatchTimings.txt");
-                        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-                        FileOutputStream fileOutputStream;
-                        String str;
-                        while ((str=br.readLine())!=null)
-                        {
-                            File file = new File(getApplicationContext().getFilesDir(),str);
-                            if(!file.exists()) file.createNewFile();
-                            fileOutputStream=openFileOutput(str,MODE_PRIVATE);
-                            str=br.readLine();
-                            if(str==null)
-                            {
-                                findViewById(R.id.show_quick_and_trending).callOnClick();
-                                return;
-                            }
-                            fileOutputStream.write(str.getBytes());
-                            fileOutputStream.close();
-                        }
-                        if(movie_watch_session_times.equals("")) movie_watch_session_times="0";
-                        if(user.isEmailVerified()) findViewById(R.id.show_quick_and_trending).callOnClick();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+            try {
+                FileInputStream fis = openFileInput("UserWatchTimings.txt");
+                BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+                FileOutputStream fileOutputStream;
+                String str;
+                while ((str=br.readLine())!=null)
+                {
+                    File file = new File(getApplicationContext().getFilesDir(),str);
+                    if(!file.exists()) file.createNewFile();
+                    fileOutputStream=openFileOutput(str,MODE_PRIVATE);
+                    str=br.readLine();
+                    if(str==null)
+                    {
+                        findViewById(R.id.show_quick_and_trending).callOnClick();
+                        return;
                     }
+                    fileOutputStream.write(str.getBytes());
+                    fileOutputStream.close();
                 }
-            },2000);
+                if(movie_watch_session_times.equals("")) movie_watch_session_times="0";
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -2122,7 +2033,7 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(toggleCastreceiver,new IntentFilter("CAST"));
         restarted=true;
         if(user!=null&&!show) {
-            new Handler().postDelayed(new Runnable() {
+            new Thread(new Runnable() {
                 @Override
                 public void run() {
 
@@ -2135,7 +2046,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                 }
-            }, 1000);
+            }).start();
         }
     }
     public void broadcastMessage(View view) {

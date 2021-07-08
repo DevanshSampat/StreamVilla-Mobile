@@ -172,7 +172,8 @@ public class DownloadNotification {
                                 DownloadFileData.setTimeLeft("");
                                 DownloadFileData.setSpeed("");
                                 if (dark) intent.putExtra("dark", true);
-                                NotificationManagerCompat.from(context).notify(18,
+                                NotificationManagerCompat.from(context).cancel(18);
+                                NotificationManagerCompat.from(context).notify(108,
                                         new NotificationCompat.Builder(context, "general")
                                                 .setSmallIcon(R.drawable.notification)
                                                 .setContentTitle(name)

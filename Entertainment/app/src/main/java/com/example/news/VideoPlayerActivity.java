@@ -1787,7 +1787,13 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
             super.onStop();
             return;
         }
-        if(getIntent().hasExtra("online")) uploadTimeDetails();
+        if(getIntent().hasExtra("online"))
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    uploadTimeDetails();;
+                }
+            }).start();
         super.onStop();
     }
     public void toggleSubtitles(View view){
