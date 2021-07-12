@@ -21,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class WatchlistActivity extends AppCompatActivity {
@@ -33,6 +34,11 @@ public class WatchlistActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_watchlist);
+        if(!new File(getFilesDir(),"isSignedIn.txt").exists()){
+            Toast.makeText(this, "Sign in to view your watchlist", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {

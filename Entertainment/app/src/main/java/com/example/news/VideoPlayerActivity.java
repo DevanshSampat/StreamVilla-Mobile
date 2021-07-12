@@ -29,6 +29,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -135,22 +138,16 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
     private boolean goToPrevious = false;
     private int currentSeason;
     private int currentEpisode;
-    private PlaybackState playbackState;
-    private PlaybackLocation mLocation;
     private PhoneIncomingCallListener phoneCallListener;
     private CastSession mCastSession;
     private SessionManagerListener<CastSession> mSessionManagerListener;
     private int video_length;
     private String subtitleLink;
     private boolean isThereSubtitle;
+    private int playbackState;
+    private MediaSessionCompat mediaSession;
+    private MediaSessionCompat.Callback callback;
 
-    public enum PlaybackLocation{
-        LOCAL,
-        REMOTE
-    }
-    public enum PlaybackState {
-        PLAYING, PAUSED, BUFFERING, IDLE
-    }
     BroadcastReceiver toggleReceiver = new BroadcastReceiver() {
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
@@ -219,6 +216,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                             .build();
                     setPictureInPictureParams(pictureInPictureParams);
                 }
+                playbackState = PlaybackStateCompat.STATE_PLAYING;
+                updateMetadata();
                 return;
             }
             findViewById(R.id.play_button).callOnClick();
@@ -255,6 +254,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                             .setActions(createAction())
                             .build();
                     setPictureInPictureParams(pictureInPictureParams);
+                    playbackState = PlaybackStateCompat.STATE_PAUSED;
+                    updateMetadata();
                 }
                 return;
             }
@@ -294,6 +295,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                             .build();
                     setPictureInPictureParams(pictureInPictureParams);
                 }
+                playbackState = videoView.isPlaying()? PlaybackStateCompat.STATE_PLAYING :PlaybackStateCompat.STATE_PAUSED;
+                updateMetadata();
             }
             else {
                 if (videoView.isPlaying()) findViewById(R.id.pause_button).callOnClick();
@@ -311,6 +314,18 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                     registerReceiver(toggleByMediaButtonReceiver,new IntentFilter("TOGGLE"));
                 }
             },1000);
+        }
+    };
+    BroadcastReceiver nextReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(isThereANextEpisode) findViewById(R.id.next_episode).callOnClick();
+        }
+    };
+    BroadcastReceiver previousReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(isThereAPreviousEpisode) findViewById(R.id.previous_episode).callOnClick();
         }
     };
     @Override
@@ -491,12 +506,71 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
         registerReceiver(toggleReceiver,new IntentFilter("PLAY/PAUSE"));
         registerReceiver(forwardReceiver,new IntentFilter("FORWARD"));
         registerReceiver(rewindReceiver,new IntentFilter("REWIND"));
+        registerReceiver(nextReceiver,new IntentFilter("NEXT"));
+        registerReceiver(previousReceiver,new IntentFilter("PREVIOUS"));
+        mediaSession = new MediaSessionCompat(getApplicationContext(),"Music");
+        mediaSession.setActive(true);
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS|MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        playbackState = PlaybackStateCompat.STATE_BUFFERING;
+        callback = new MediaSessionCompat.Callback() {
+            @Override
+            public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
+                KeyEvent keyEvent = (KeyEvent) mediaButtonEvent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+                    try {
+                        switch (keyEvent.getKeyCode()) {
+                            case KeyEvent.KEYCODE_MEDIA_PLAY:
+                                sendBroadcast(new Intent("PLAY"));
+                                break;
+                            case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                                sendBroadcast(new Intent("PAUSE"));
+                                break;
+                            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                                sendBroadcast(new Intent("TOGGLE"));
+                                break;
+                            case KeyEvent.KEYCODE_MEDIA_NEXT:
+                                sendBroadcast(new Intent("NEXT"));
+                                break;
+                            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                                sendBroadcast(new Intent("PREVIOUS"));
+                                break;
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                return false;
+            }
+
+            @Override
+            public void onSkipToNext() {
+                super.onSkipToNext();
+            }
+
+            @Override
+            public void onSkipToPrevious() {
+                super.onSkipToPrevious();
+            }
+
+            @Override
+            public void onPause() {
+                super.onPause();
+            }
+
+            @Override
+            public void onPlay() {
+                super.onPlay();
+            }
+
+
+        };
+        mediaSession.setCallback(callback);
         gestureDetector = new GestureDetector(this,this);
         gestureDetector.setOnDoubleTapListener(this);
-        AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        /*AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         ComponentName componentName = new ComponentName(getPackageName(),BluetoothPlayPauseReceiver.class.getName());
         audioManager.registerMediaButtonEventReceiver(componentName);
-        videoView = (VideoView) findViewById(R.id.video);
+        */videoView = (VideoView) findViewById(R.id.video);
+        updateMetadata();
         listView = findViewById(R.id.list_of_audio_tracks);
         seekBar=findViewById(R.id.seekbar);
         startTimeCounting();
@@ -930,6 +1004,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                     }
                     findViewById(R.id.pause_button).setVisibility(View.GONE);
                 }
+                playbackState = PlaybackStateCompat.STATE_PLAYING;
+                updateMetadata();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -954,6 +1030,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                     findViewById(R.id.blackish).setVisibility(View.VISIBLE);
                     findViewById(R.id.blackish).startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in));
                 }
+                playbackState = PlaybackStateCompat.STATE_PAUSED;
+                updateMetadata();
             }
         });
         findViewById(R.id.rewind).setOnClickListener(new View.OnClickListener() {
@@ -1077,10 +1155,14 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                             findViewById(R.id.pause_button).setVisibility(View.VISIBLE);
                             findViewById(R.id.play_button).setVisibility(View.GONE);
                         }
+                        playbackState = videoView.isPlaying()?PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
+                        updateMetadata();
                         findViewById(R.id.load).setVisibility(View.GONE);
                         break;
                     case MediaPlayer.MEDIA_INFO_BUFFERING_START:
                         findViewById(R.id.load).setVisibility(View.VISIBLE);
+                        playbackState = PlaybackStateCompat.STATE_BUFFERING;
+                        updateMetadata();
                         break;
                     case MediaPlayer.MEDIA_ERROR_UNKNOWN :
                         Log.println(Log.ASSERT,"Error",i+"");
@@ -1178,6 +1260,29 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
              }
         };
         castContext.getSessionManager().addSessionManagerListener(mSessionManagerListener,CastSession.class);
+    }
+
+    private void updateMetadata() {
+        String title;
+        String description;
+        if(getIntent().hasExtra("name")) title = getIntent().getStringExtra("name");
+        else {
+            title = getIntent().getData().getPath();
+            title = title.substring(title.lastIndexOf('/')+1);
+        }
+        if(getIntent().hasExtra("description")) description = getIntent().getStringExtra("description");
+        else description = "Entertainment";
+        MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
+        builder.putString(android.media.MediaMetadata.METADATA_KEY_DISPLAY_TITLE,title);
+        builder.putString(android.media.MediaMetadata.METADATA_KEY_TITLE,title);
+        builder.putString(android.media.MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE,description);
+        mediaSession.setMetadata(builder.build());
+        mediaSession.setPlaybackState(new PlaybackStateCompat.Builder().setState(playbackState,
+                videoView.getCurrentPosition(),
+                1)
+                .setActions(PlaybackStateCompat.ACTION_SEEK_TO)
+                .build()
+        );
     }
 
     private void showDialogForIncompatibility() {
@@ -1437,17 +1542,25 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
     @Override
     protected void onDestroy() {
         try {
+            if(goToNext||goToPrevious){
+                mediaSession.release();
+                super.onDestroy();
+                return;
+            }
             unregisterReceiver(toggleReceiver);
             unregisterReceiver(forwardReceiver);
             unregisterReceiver(rewindReceiver);
             unregisterReceiver(toggleByMediaButtonReceiver);
             unregisterReceiver(playReceiver);
             unregisterReceiver(pauseReceiver);
+            unregisterReceiver(nextReceiver);
+            unregisterReceiver(previousReceiver);
             TelephonyManager telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
             telephonyManager.listen(phoneCallListener, PhoneStateListener.LISTEN_NONE);
-            AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+   /*         AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
             ComponentName componentName = new ComponentName(getPackageName(), BluetoothPlayPauseReceiver.class.getName());
             audioManager.unregisterMediaButtonEventReceiver(componentName);
+   */         mediaSession.release();
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -1983,6 +2096,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                             intent.putExtra("dbName",dbName);
                             intent.putExtra("episode_number",number+"");
                             intent.putExtra("link",link);
+                            intent.putExtra("description",getIntent().getStringExtra("description"));
                             finish();
                             startActivity(intent);
                             overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
@@ -2009,6 +2123,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                     intent.putExtra("dbName",getIntent().getStringExtra("dbName"));
                     intent.putExtra("episode_number",(number+1)+"");
                     intent.putExtra("link",link);
+                    intent.putExtra("description",getIntent().getStringExtra("description"));
                     finish();
                     startActivity(intent);
                     overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
@@ -2062,6 +2177,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                             intent.putExtra("dbName",dbName);
                             intent.putExtra("episode_number",number+"");
                             intent.putExtra("link",link);
+                            intent.putExtra("description",getIntent().getStringExtra("description"));
                             finish();
                             startActivity(intent);
                             return;
@@ -2084,6 +2200,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                     intent.putExtra("dbName",getIntent().getStringExtra("dbName"));
                     intent.putExtra("episode_number",(number-1)+"");
                     intent.putExtra("link",link);
+                    intent.putExtra("description",getIntent().getStringExtra("description"));
                     finish();
                     startActivity(intent);
                 } catch (Exception exception) {

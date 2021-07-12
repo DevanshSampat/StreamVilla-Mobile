@@ -645,6 +645,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void signOut(final View v)
     {
+        new File(getFilesDir(),"isSignedIn.txt").delete();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -765,15 +766,6 @@ public class MainActivity extends AppCompatActivity {
             GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
             getInformation();
             firebaseAuthWithGoogle(acct.getIdToken());
-            if (getIntent().hasExtra("search"))
-            {
-                Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
-                intent.putExtra("search", getIntent().getStringExtra("search"));
-                if (getIntent().hasExtra("open")) intent.putExtra("open", true);
-                intent.putExtra("signed_in", true);
-                if (dark) intent.putExtra("dark", true);
-                startActivity(intent);
-            }
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
@@ -813,12 +805,28 @@ public class MainActivity extends AppCompatActivity {
                             Log.println(Log.ASSERT,"status","signed in");
                             validate();
                             // Sign in success, update UI with the signed-in user's information
+                            if (getIntent().hasExtra("search"))
+                            {
+                                Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
+                                intent.putExtra("search", getIntent().getStringExtra("search"));
+                                if (getIntent().hasExtra("open")) intent.putExtra("open", true);
+                                intent.putExtra("signed_in", true);
+                                if (dark) intent.putExtra("dark", true);
+                                startActivity(intent);
+                            }
                         }
                     }
                 });
     }
     private void validate()
     {
+        if(!new File(getFilesDir(),"isSignedIn.txt").exists()) {
+            try {
+                new File(getFilesDir(),"isSignedIn.txt").createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
         if(acct!=null) {
             findViewById(R.id.search).setVisibility(View.VISIBLE);
