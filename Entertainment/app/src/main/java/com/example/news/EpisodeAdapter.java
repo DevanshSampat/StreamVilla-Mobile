@@ -39,6 +39,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
     private String imageURL;
     private String dbName;
     private boolean dark;
+    private String[] size;
     public EpisodeAdapter(Context context, String name, String imageURL, String[] links,String[] subtitles, String dbName, int count){
         this.count = count;
         this.links = links;
@@ -64,11 +65,16 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
         if(dark){
             holder.layout.setBackgroundColor(Color.BLACK);
             holder.textView.setTextColor(Color.WHITE);
+            holder.sizeOfContent.setTextColor(Color.WHITE);
             holder.cardView.setCardBackgroundColor(Color.parseColor("#363636"));
         }
         holder.textView.setText("Episode "+(position+1));
+        try{
+            holder.sizeOfContent.setText(size[position]);
+        } catch (Exception e) {
+            holder.sizeOfContent.setText("");
+        }
         Picasso.with(context).load(imageURL).into(holder.imageView);
-        holder.itemView.startAnimation(AnimationUtils.loadAnimation(context,R.anim.zoom_in_recycle));
         holder.setIsRecyclable(false);
         String seasonNumber = dbName.substring(dbName.lastIndexOf('s')+1);
         if(new File(context.getExternalFilesDir(null),(name + "E" + (position+1))
@@ -174,17 +180,24 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
         return count;
     }
 
+    public void setSize(String[] size) {
+        this.size = size;
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         LinearLayout layout;
         TextView textView;
         ImageView imageView;
         CardView cardView;
+        TextView sizeOfContent;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             layout = itemView.findViewById(R.id.layout);
             textView = itemView.findViewById(R.id.text);
             imageView = itemView.findViewById(R.id.image);
             cardView = itemView.findViewById(R.id.card);
+            sizeOfContent = itemView.findViewById(R.id.size);
         }
     }
 }

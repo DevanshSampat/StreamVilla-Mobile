@@ -232,6 +232,43 @@ public class DescriptionActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
             }
         });
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(!getIntent().hasExtra("link")||new File(getExternalFilesDir(null),
+                        getIntent().getStringExtra("name").replace(':','_')
+                                .replace(' ','_')+".mp4").exists()) return;
+                try {
+                    URLConnection connection = new URL(getIntent().getStringExtra("link")).openConnection();
+                    connection.connect();
+                    double size = connection.getContentLengthLong();
+                    String string = "";
+                    String index = "MB";
+                    size = size/(1024*1024);
+                    if(size>=1024){
+                        size = size/1024;
+                        index = "GB";
+                    }
+                    string = String.valueOf(size);
+                    try{
+                        string = string.substring(0,string.indexOf('.')+3);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    String finalString = string;
+                    String finalIndex = index;
+                    runOnUiThread(new Runnable() {
+                        @SuppressLint("SetTextI18n")
+                        @Override
+                        public void run() {
+                            ((TextView)findViewById(R.id.text_download)).setText("Download ("+ finalString +" "+ finalIndex+")");
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         findViewById(R.id.download).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

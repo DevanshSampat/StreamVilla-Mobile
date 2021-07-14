@@ -29,17 +29,30 @@
                 android:layout_marginHorizontal="10dp"
                 android:layout_centerVertical="true"
                 android:id="@+id/image"/>
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/image"
+                android:orientation="vertical"
                 android:layout_centerVertical="true"
-                android:id="@+id/text"
-                android:layout_toStartOf="@id/download_delete"
-                android:layout_marginHorizontal="10dp"
-                android:textColor="@android:color/black"
-                android:textSize="22sp"
-                android:text="Season 1"/>
+                android:layout_toEndOf="@id/image"
+                android:layout_toStartOf="@id/download_delete">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/text"
+                    android:layout_marginHorizontal="10dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="22sp"
+                    android:text="Season 1"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/size"
+                    android:layout_marginHorizontal="10dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    android:text="0MB"/>
+            </LinearLayout>
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"

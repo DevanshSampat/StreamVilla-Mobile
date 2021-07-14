@@ -27,6 +27,7 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
     private Context context;
     private String imageURL;
     private boolean dark;
+    private String[] size;
     public SeasonAdapter(Context context, String name, String imageURL, String dbName, int count){
         this.count = count;
         this.dbName = dbName;
@@ -50,11 +51,16 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
         if(dark){
             holder.layout.setBackgroundColor(Color.BLACK);
             holder.cardView.setCardBackgroundColor(Color.parseColor("#363636"));
+            holder.sizeOfContent.setTextColor(Color.WHITE);
             holder.textView.setTextColor(Color.WHITE);
         }
-        holder.itemView.startAnimation(AnimationUtils.loadAnimation(context,R.anim.zoom_in_recycle));
         holder.setIsRecyclable(false);
         holder.textView.setText("Season "+(position+1));
+        try{
+            holder.sizeOfContent.setText(size[position]);
+        } catch (Exception e) {
+            holder.sizeOfContent.setText("");
+        }
         Picasso.with(context).load(imageURL).into(holder.imageView);
         holder.itemView.findViewById(R.id.download_delete).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,17 +87,23 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
         return count;
     }
 
+    public void setSize(String[] size) {
+        this.size = size;
+        notifyDataSetChanged();
+    }
     public class ViewHolder extends RecyclerView.ViewHolder {
         LinearLayout layout;
         TextView textView;
         ImageView imageView;
         CardView cardView;
+        TextView sizeOfContent;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             layout = itemView.findViewById(R.id.layout);
             textView = itemView.findViewById(R.id.text);
             imageView = itemView.findViewById(R.id.image);
             cardView = itemView.findViewById(R.id.card);
+            sizeOfContent = itemView.findViewById(R.id.size);
         }
     }
 }
