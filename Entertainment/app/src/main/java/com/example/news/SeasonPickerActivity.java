@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -81,6 +82,13 @@ public class SeasonPickerActivity extends AppCompatActivity {
                                 }
                                 totalSize=0;
                                 for(int j=1;j<=Integer.parseInt(snapshot.child(dbName+"s"+(i+1)).getValue().toString());j++) {
+                                    try{
+                                        snapshot.child(dbName+"s"+(i+1)+"e"+j).getValue().toString();
+                                    } catch (Exception e) {
+                                        Log.println(Log.ASSERT,"problem",j+"");
+                                        e.printStackTrace();
+                                        continue;
+                                    }
                                     URLConnection connection = new URL(snapshot.child(dbName+"s"+(i+1)+"e"+j).getValue().toString()).openConnection();
                                     connection.connect();
                                     totalSize = totalSize+connection.getContentLengthLong();
