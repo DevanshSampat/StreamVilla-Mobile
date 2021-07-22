@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
@@ -171,7 +172,8 @@ public class MainActivity extends AppCompatActivity {
         printDate();
         findViewById(R.id.watchlist).setVisibility(View.GONE);
         if(CastContext.getSharedInstance(this).getSessionManager().getCurrentCastSession()==null) findViewById(R.id.castCard).setVisibility(View.GONE);
-        Switch toggle = (Switch) findViewById(R.id.dark_toggle);
+        @SuppressLint("UseSwitchCompatOrMaterialCode")
+        Switch toggle = findViewById(R.id.dark_toggle);
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
@@ -1453,7 +1455,7 @@ public class MainActivity extends AppCompatActivity {
                         date[count] = snapshot.child("moviedate" + i).getValue().toString();
                         image[count] = snapshot.child("movieimage" + i).getValue().toString();
                         database_name[count] = "movie" + i;
-                        movieData[track] = new ContentData(name[count], image[count], link[count], date[count]);
+                        movieData[track] = new ContentData(MainActivity.this,name[count], image[count], link[count], date[count]);
                         track++;
                         try {
                             tag[count] = snapshot.child("movietag" + i).getValue().toString();
@@ -1728,22 +1730,15 @@ public class MainActivity extends AppCompatActivity {
                     first = false;
                     int select = (int) (System.currentTimeMillis() % movieData.length);
                     if (getIntent().hasExtra("personal") && personal) {
-                        if (movieData[select].getLink().contains("(video)")) {
-                            Intent intent = new Intent(getApplicationContext(), DescriptionActivity.class);
-                            if (dark) intent.putExtra("dark", true);
-                            intent.putExtra("name", movieData[select].getName());
-                            intent.putExtra("description", movieData[select].getDate());
-                            intent.putExtra("image", movieData[select].getImage());
-                            intent.putExtra("link", movieData[select].getLink().substring("(video)".length()));
-                            startActivity(intent);
-                        } else {
-                            Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
-                            if (dark) intent.putExtra("dark", true);
-                            intent.putExtra("search", movieData[select].getName());
-                            intent.putExtra("signed_in", true);
-                            intent.putExtra("personal", true);
-                            startActivity(intent);
-                        }
+                        personal = false;
+                        Intent intent;
+                        intent = new Intent(getApplicationContext(), SearchActivity.class);
+                        if (dark) intent.putExtra("dark", true);
+                        intent.putExtra("search", movieData[select].getName());
+                        if(movieData[select].getLink().startsWith("(video)")) intent.putExtra("open",true);
+                        intent.putExtra("signed_in", true);
+                        intent.putExtra("personal", true);
+                        startActivity(intent);
                         finish();
                     }
                     personal = false;
@@ -1800,9 +1795,6 @@ public class MainActivity extends AppCompatActivity {
                     if (minute < 10) str = str + "0";
                     str = str + minute;
                     next_notification = str;
-                    Uri uri = FileProvider.getUriForFile(getApplicationContext(), BuildConfig.APPLICATION_ID + ".provider",
-                            new File(getApplicationContext().getExternalFilesDir(null), ".notification.jpg"));
-                    getContentResolver().delete(uri, null, null);
                 }
             }
 

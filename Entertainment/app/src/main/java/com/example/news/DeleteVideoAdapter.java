@@ -24,6 +24,11 @@ import java.util.Arrays;
 public class DeleteVideoAdapter extends RecyclerView.Adapter<DeleteVideoAdapter.ViewHolder> {
     private ArrayList<File> fileArrayList;
     private Context context;
+
+    public boolean[] getDelete() {
+        return delete;
+    }
+
     private boolean[] delete;
     private long size;
     public DeleteVideoAdapter(ArrayList<File> fileArrayList) {

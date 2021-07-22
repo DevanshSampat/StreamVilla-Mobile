@@ -1,19 +1,26 @@
 package com.example.news;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -31,6 +38,7 @@ public class DeleteMultipleVideosActivity extends AppCompatActivity {
     private BroadcastReceiver sizeReceiver;
     private BroadcastReceiver checkAllReceiver;
     private boolean checkAll;
+    private Dialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,11 +154,57 @@ public class DeleteMultipleVideosActivity extends AppCompatActivity {
         getAllVideos();
     }
 
+    @SuppressLint("SetTextI18n")
     public void delete(View view) {
-        try{
-            ((DeleteVideoAdapter)recyclerView.getAdapter()).deleteFiles();
-        } catch (Exception e) {
-            e.printStackTrace();
+        dialog = new Dialog(this);
+        dialog.setContentView(R.layout.delete_dialog);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.getWindow().setDimAmount(0.80f);
+        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+        lp.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+        lp.y = 100;
+        lp.verticalMargin = 5;
+        lp.horizontalMargin = 5;
+        dialog.getWindow().setAttributes(lp);
+        dialog.setCancelable(true);
+        TextView textView = dialog.findViewById(R.id.text_warning);
+        int count = 0;
+        for(boolean bool : ((DeleteVideoAdapter)recyclerView.getAdapter()).getDelete()) if(bool) count++;
+        if(count==0) return;
+        textView.setText("Do you want to delete "+count+" video"+(count==1?"":"s")+"?");
+        if(new Theme(this).isInDarkMode()) {
+            textView = dialog.findViewById(R.id.text_warning);
+            CardView cardView = dialog.findViewById(R.id.delete_card);
+            textView.setTextColor(Color.parseColor("#CCCCCC"));
+            cardView.setCardBackgroundColor(Color.parseColor("#222222"));
+            textView = dialog.findViewById(R.id.text_keep);
+            cardView = dialog.findViewById(R.id.keep);
+            textView.setTextColor(Color.parseColor("#CCCCCC"));
+            cardView.setCardBackgroundColor(Color.parseColor("#393939"));
+            cardView = dialog.findViewById(R.id.card);
+            cardView.setCardBackgroundColor(Color.parseColor("#393939"));
         }
+        dialog.findViewById(R.id.keep).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        dialog.findViewById(R.id.delete_movie).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    dialog.dismiss();
+                    ((DeleteVideoAdapter)recyclerView.getAdapter()).deleteFiles();
+                    Toast.makeText(DeleteMultipleVideosActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
+                    ((TextView)findViewById(R.id.delete_text)).setText("Select items to delete");
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        dialog.show();
     }
 }

@@ -828,6 +828,7 @@ public class SearchActivity extends AppCompatActivity {
                         intent.putExtra("name",tempData[0].getName());
                         intent.putExtra("image",tempData[0].getImage());
                         intent.putExtra("description",tempData[0].getDate());
+                        intent.putExtra("movie_db",tempData[0].getDataBaseName());
                         intent.putExtra("add_to_quick_picks",tempData[0].getDataBaseName());
                         if(dark) intent.putExtra("dark",true);
                         startActivity(intent);
