@@ -552,9 +552,9 @@ public class SearchActivity extends AppCompatActivity {
             findViewById(R.id.filter).callOnClick();
             return;
         }
-        super.onBackPressed();
+        finish();
         if(getIntent().hasExtra("filter")) overridePendingTransition(R.anim.fade_in,R.anim.zoom_out);
-        else overridePendingTransition(R.anim.right_start,R.anim.right_end);
+        else overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
     }
 
     public void showFilters(final View view)

@@ -1471,12 +1471,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
             Toast.makeText(getApplicationContext(),"Video Player is locked",Toast.LENGTH_SHORT).show();
             return;
         }
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O) onUserLeaveHint();
-        else
-        {
-            onPause();
-            finish();
-        }
+        onPause();
+        finish();
     }
     private void uploadTimeDetails()
     {

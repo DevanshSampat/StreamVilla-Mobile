@@ -206,8 +206,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                     Pair<View, String> pair1 = Pair.create((View)holder.imageView,holder.imageView.getTransitionName());
                     //Pair<View, String> pair2 = Pair.create((View)holder.textView,holder.textView.getTransitionName());
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity)context,pair1);
-                    if(animate) context.startActivity(intent,options.toBundle());
-                    else context.startActivity(intent);
+                    context.startActivity(intent,options.toBundle());
                 }
                 else if(contentData[position].getLink().equals("webseries")){
                     /*intent = new Intent(context,SeasonPickerActivity.class);

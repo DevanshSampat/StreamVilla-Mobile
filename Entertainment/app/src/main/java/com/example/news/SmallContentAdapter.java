@@ -219,7 +219,7 @@ public class SmallContentAdapter extends RecyclerView.Adapter<SmallContentAdapte
                     if(contentData[position].getDataBaseName()!=null) intent.putExtra("add_to_quick_picks",contentData[position].getDataBaseName());
                     if(dark) intent.putExtra("dark",true);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
+                    context.startActivity(intent,ActivityOptionsCompat.makeSceneTransitionAnimation((Activity)context,holder.imageView,holder.imageView.getTransitionName()).toBundle());
                 }
                 else if(contentData[position].getLink().equals("webseries")){
                     /*intent = new Intent(context,SeasonPickerActivity.class);

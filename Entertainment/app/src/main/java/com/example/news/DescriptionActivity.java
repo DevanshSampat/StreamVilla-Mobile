@@ -794,4 +794,10 @@ public class DescriptionActivity extends AppCompatActivity {
         }
         return false;
     }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.right_start,R.anim.right_end);
+    }
 }
