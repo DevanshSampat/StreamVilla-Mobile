@@ -12,10 +12,7 @@
         android:layout_height="wrap_content">
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="350dp"
-            android:layout_marginTop="75dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp"
+            android:layout_height="250dp"
             android:layout_centerHorizontal="true"
             android:transitionName="image_movie"
             android:id="@+id/image"

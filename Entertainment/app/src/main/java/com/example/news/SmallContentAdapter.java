@@ -6,7 +6,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.icu.util.Calendar;
 import android.net.Uri;
@@ -14,17 +14,16 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.shimmer.Shimmer;
@@ -163,12 +162,11 @@ public class SmallContentAdapter extends RecyclerView.Adapter<SmallContentAdapte
 
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         this.holder = holder;
         this.position = position;
         if(dark)
         {
-            holder.cardView.setCardBackgroundColor(Color.parseColor("#363636"));
             holder.textView.setTextColor(Color.WHITE);
         }
         if(shimmer||contentData==null)
@@ -202,8 +200,45 @@ public class SmallContentAdapter extends RecyclerView.Adapter<SmallContentAdapte
         if(!contentData[position].getLink().equals("webseries")) holder.progressBar.setProgress(contentData[position].getProgressPercent());
         else holder.progressBar.setVisibility(View.INVISIBLE);
         holder.textView.setText(contentData[position].getName());
-        Picasso.with(holder.imageView.getContext()).load(contentData[position].getImage()).into(holder.imageView);
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
+        if(contentData[position].getLink().equals("webseries")){
+            String season = "1";
+            String episode = "1";
+            String combo = "s1e1";
+            String videoPosition = "0";
+            if(new File(context.getFilesDir(),contentData[position].getName().replace(' ','+')+".txt").exists()){
+                try {
+                    BufferedReader br = new BufferedReader(new InputStreamReader(context.openFileInput(contentData[position].getName().replace(' ','+')+".txt")));
+                    String str = br.readLine();
+                    season = str.substring(0,str.indexOf('\t'));
+                    episode = str.substring(str.indexOf('\t')+1);
+                    if(episode.contains("\t")){
+                        videoPosition = episode.substring(episode.indexOf('\t')+1);
+                        episode = episode.substring(0,episode.indexOf("\t"));
+                    }
+                    combo = "s"+season+"e"+episode;
+                    File file =new File(context.getExternalFilesDir(null),".screenshot_of_"+contentData[position].getName().replace(':','_')
+                            .replace(' ','_')+"___"+combo.toUpperCase()+".jpeg");
+                    if(file.exists()){
+                        holder.imageView.setImageBitmap(BitmapFactory.decodeFile(file.getPath()));
+                    }
+                    else Picasso.with(holder.imageView.getContext()).load(contentData[position].getImage()).into(holder.imageView);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else Picasso.with(holder.imageView.getContext()).load(contentData[position].getImage()).into(holder.imageView);
+        }
+        else{
+            File file = new File(context.getExternalFilesDir(null),".screenshot_of_"+contentData[position].getName().replace(':','_')
+                    .replace(' ','_')+".jpeg");
+            if(file.exists()){
+                holder.imageView.setImageBitmap(BitmapFactory.decodeFile(file.getPath()));
+            }
+            else Picasso.with(holder.imageView.getContext()).load(contentData[position].getImage()).into(holder.imageView);
+        }
+        holder.containerLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent;
@@ -239,14 +274,16 @@ public class SmallContentAdapter extends RecyclerView.Adapter<SmallContentAdapte
                     intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(contentData[position].getLink()));
                     printHistory(contentData[position].getName());
-                    new Sync().uploadHistory(context);
-                    new Sync().addToQuickPicks(context,contentData[position].getDataBaseName());
+                    new Thread(() -> {
+                        new Sync().uploadHistory(context);
+                        new Sync().addToQuickPicks(context,contentData[position].getDataBaseName());
+                    }).start();
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
                 }
             }
         });
-        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.containerLayout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 if(contentData[position].getLink().equals("webseries")) {
@@ -259,7 +296,12 @@ public class SmallContentAdapter extends RecyclerView.Adapter<SmallContentAdapte
                 dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
                ((TextView)dialog.findViewById(R.id.title)).setText(contentData[position].getName());
                 ((TextView)dialog.findViewById(R.id.description)).setText(contentData[position].getDate());
-                Picasso.with(context).load(contentData[position].getImage()).into((ImageView)dialog.findViewById(R.id.image));
+                File file = new File(context.getExternalFilesDir(null),".screenshot_of_"+contentData[position].getName().replace(':','_')
+                        .replace(' ','_')+".jpeg");
+                if(file.exists()){
+                    ((ImageView) dialog.findViewById(R.id.image)).setImageBitmap(BitmapFactory.decodeFile(file.getPath()));
+                }
+                else Picasso.with(context).load(contentData[position].getImage()).into((ImageView) dialog.findViewById(R.id.image));
                 if(!contentData[position].getLink().contains("(video)")
                     || new File(context.getExternalFilesDir(null),
                         contentData[position].getName().replace(' ','_')
@@ -336,7 +378,7 @@ public class SmallContentAdapter extends RecyclerView.Adapter<SmallContentAdapte
                     @Override
                     public void onClick(View view) {
                         dialog.dismiss();
-                        if(!contentData[position].getLink().contains("(video)")) holder.cardView.callOnClick();
+                        if(!contentData[position].getLink().contains("(video)")) holder.containerLayout.callOnClick();
                         else
                         {
                             Intent intent = new Intent(context, VideoPlayerActivity.class);
@@ -348,21 +390,10 @@ public class SmallContentAdapter extends RecyclerView.Adapter<SmallContentAdapte
                             intent.putExtra("movie_db",contentData[position].getDataBaseName());
                             intent.putExtra("description",contentData[position].getDate());
                             printHistory(contentData[position].getName());
-                            new Sync().addToQuickPicks(context, contentData[position].getDataBaseName());
-                            if(!new File(context.getFilesDir(),"Tutorial.txt").exists())
-                            {
-                                Intent tutorialIntent = new Intent(context,TutorialActivity.class);
-                                tutorialIntent.putExtras(intent.getExtras());
-                                tutorialIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                if(dark) tutorialIntent.putExtra("dark",true);
-                                context.startActivity(tutorialIntent);
-                                try {
-                                    new File(context.getFilesDir(),"Tutorial.txt").createNewFile();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                return;
-                            }
+                            new Thread(()->{new Sync().uploadHistory(context);
+                                new Sync().addToQuickPicks(context,contentData[position].getDataBaseName());
+                                new Sync().uploadHistory(context);
+                            }).start();
                             context.startActivity(intent);
                         }
                     }
@@ -438,13 +469,14 @@ public class SmallContentAdapter extends RecyclerView.Adapter<SmallContentAdapte
                 intent.putExtra("image",data.getImage());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 printHistory(data.getName());
-                new Sync().uploadHistory(context);
-                new Sync().addToQuickPicks(context,data.getDataBaseName());
+                new Thread(()->{
+                    new Sync().uploadHistory(context);
+                    new Sync().addToQuickPicks(context, data.getDataBaseName());
+                }).start();
                 context.startActivity(intent);
                 dialog.dismiss();
             }
         });
-        Picasso.with(context).load(data.getImage()).into((ImageView)dialog.findViewById(R.id.image));
         if(dark)
         {
             dialog.findViewById(R.id.layout).setBackgroundColor(Color.parseColor("#303030"));
@@ -464,12 +496,20 @@ public class SmallContentAdapter extends RecyclerView.Adapter<SmallContentAdapte
                 }
                 combo = "s"+season+"e"+episode;
                 ((TextView)dialog.findViewById(R.id.watch_text)).setText("Continue : Season "+season+" - Episode "+episode);
+                File file =new File(context.getExternalFilesDir(null),".screenshot_of_"+data.getName().replace(':','_')
+                        .replace(' ','_')+"___"+combo.toUpperCase()+".jpeg");
+                if(file.exists()){
+                    ((ImageView)dialog.findViewById(R.id.image)).setImageBitmap(BitmapFactory.decodeFile(file.getPath()));
+                }
+                else Picasso.with(context).load(data.getImage()).into((ImageView)dialog.findViewById(R.id.image));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        else Picasso.with(context).load(data.getImage()).into((ImageView)dialog.findViewById(R.id.image));
+
         final String finalEpisode = episode;
         final String finalSeason = season;
         final String finalCombo = combo;
@@ -490,8 +530,10 @@ public class SmallContentAdapter extends RecyclerView.Adapter<SmallContentAdapte
                 intent.putExtra("description",contentData[position].getDate());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 printHistory(data.getName());
-                new Sync().uploadHistory(context);
-                new Sync().addToQuickPicks(context,data.getDataBaseName());
+                new Thread(()->{
+                    new Sync().uploadHistory(context);
+                    new Sync().addToQuickPicks(context, data.getDataBaseName());
+                }).start();
                 FirebaseDatabase.getInstance().getReference().addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -553,7 +595,7 @@ public class SmallContentAdapter extends RecyclerView.Adapter<SmallContentAdapte
 
         ImageView imageView;
         TextView textView;
-        CardView cardView;
+        LinearLayout containerLayout;
         TextView subtitle;
         ShimmerFrameLayout shimmerFrameLayout;
         ProgressBar progressBar;
@@ -561,7 +603,7 @@ public class SmallContentAdapter extends RecyclerView.Adapter<SmallContentAdapte
             super(itemView);
             imageView = itemView.findViewById(R.id.image);
             textView = itemView.findViewById(R.id.title);
-            cardView = itemView.findViewById(R.id.content_details);
+            containerLayout = itemView.findViewById(R.id.container_layout);
             progressBar = itemView.findViewById(R.id.movie_progress);
             shimmerFrameLayout = itemView.findViewById(R.id.shimmer_frame);
         }

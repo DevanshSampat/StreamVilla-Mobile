@@ -191,12 +191,13 @@
         android:layout_height="80dp"
         android:layout_centerInParent="true"
         android:id="@+id/center_apparent"/>
+
     <ImageView
+        android:id="@+id/pause_button"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_centerInParent="true"
-        android:src="@drawable/ic_baseline_pause_circle_outline_24"
-        android:id="@+id/pause_button"/>
+        android:src="@drawable/ic_baseline_pause_circle_outline_24" />
     <ImageView
         android:layout_width="80dp"
         android:layout_height="80dp"

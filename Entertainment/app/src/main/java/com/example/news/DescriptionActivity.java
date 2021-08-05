@@ -209,6 +209,12 @@ public class DescriptionActivity extends AppCompatActivity {
             textView.setTextColor(Color.parseColor("#CCCCCC"));
             dark=true;
         }
+        findViewById(R.id.image).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                findViewById(R.id.watch).callOnClick();
+            }
+        });
         findViewById(R.id.watch).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -295,13 +301,23 @@ public class DescriptionActivity extends AppCompatActivity {
                 return false;
             }
         });
-        if(getIntent().getStringExtra("image").substring(0,4).equals("http"))
-            Picasso.with(this).load(Uri.parse(getIntent().getStringExtra("image"))).into((ImageView) findViewById(R.id.image));
-        else
-        {
-            ImageView imageView = findViewById(R.id.image);
-            Bitmap bitmap = BitmapFactory.decodeFile(getIntent().getStringExtra("image"));
-            imageView.setImageBitmap(bitmap);
+        try {
+            if (getIntent().getStringExtra("image").substring(0, 4).equals("http")) {
+                File file = new File(getExternalFilesDir(null), ".screenshot_of_" + getIntent().getStringExtra("name")
+                        .replace(' ', '_').replace(':', '_') + ".jpeg");
+                if (file.exists()) {
+                    ((ImageView)findViewById(R.id.image)).setImageBitmap(BitmapFactory.decodeFile(file.getPath()));
+                } else
+                    Picasso.with(this).load(Uri.parse(getIntent().getStringExtra("image"))).into((ImageView) findViewById(R.id.image));
+            }
+            else
+            {
+                ImageView imageView = findViewById(R.id.image);
+                Bitmap bitmap = BitmapFactory.decodeFile(getIntent().getStringExtra("image"));
+                imageView.setImageBitmap(bitmap);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
         }
         TextView textView = findViewById(R.id.title);
         textView.setText(getIntent().getStringExtra("name"));

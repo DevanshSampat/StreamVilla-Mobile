@@ -110,8 +110,8 @@ public class DownloadNotification {
                         Cursor cursor = manager.query(query);
                         cursor.moveToFirst();
                         try {
-                            final long bytes_downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                            final long bytes_total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                            final long bytes_downloaded = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                            final long bytes_total = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
                             final int progress = (int) ((100 * bytes_downloaded) / bytes_total);
                             if(!new File(context.getFilesDir(),"isDownloading.txt").exists()){
                                 goToNextTask();

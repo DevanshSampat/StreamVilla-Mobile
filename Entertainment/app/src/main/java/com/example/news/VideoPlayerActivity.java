@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Icon;
 import android.media.AudioManager;
@@ -40,6 +41,7 @@ import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MotionEvent;
+import android.view.PixelCopy;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.accessibility.CaptioningManager;
@@ -172,7 +174,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
                     .setAspectRatio(new Rational(width, height))
                     .setActions(createAction())
                     .build();
-            setPictureInPictureParams(pictureInPictureParams);
+            try{
+                setPictureInPictureParams(pictureInPictureParams);
+            } catch (Exception e) {
+                //Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
         }
     };
     BroadcastReceiver rewindReceiver = new BroadcastReceiver() {
@@ -680,6 +686,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(final MediaPlayer mediaPlayer) {
+                takeScreenshot();
                 player = mediaPlayer;
                 video_length = videoView.getDuration();
                 videoView.start();
@@ -2264,5 +2271,42 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
         remoteMediaClient.setActiveMediaTracks(new long[]{9});
         remoteMediaClient.setTextTrackStyle(TextTrackStyle.fromSystemSettings(this));
         Log.println(Log.ASSERT,"Load","true");
+    }
+
+    private void takeScreenshot(){
+        if(!getIntent().hasExtra("online")) return;
+        Bitmap bitmap = Bitmap.createBitmap(videoView.getMeasuredWidth(),videoView.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        try{
+            PixelCopy.request(videoView, bitmap, i -> {
+                try {
+                    FileOutputStream fos = new FileOutputStream(new File(getExternalFilesDir(null),".screenshot_of_"+
+                            getIntent().getStringExtra("name").replace(':','_').replace(' ','_')+
+                            ".jpeg"));
+                    bitmap.compress(Bitmap.CompressFormat.JPEG,60,fos);
+                    fos.flush();
+                    fos.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            },new Handler());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                takeScreenshot();
+            }
+        },10000);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        finish();
+        startActivity(intent);
     }
 }

@@ -87,7 +87,7 @@
             android:name=".VideoPlayerActivity"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:label="Play Video"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:supportsPictureInPicture="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter tools:ignore="AppLinkUrlError">

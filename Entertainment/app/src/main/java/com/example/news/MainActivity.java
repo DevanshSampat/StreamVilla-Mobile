@@ -214,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
         recentlyAdded.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
         recentlyAdded.setVisibility(View.GONE);
         findViewById(R.id.recently_added).setVisibility(View.GONE);
+        findViewById(R.id.settings).setVisibility(View.INVISIBLE);
         userType = new String();
         userType = "";
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

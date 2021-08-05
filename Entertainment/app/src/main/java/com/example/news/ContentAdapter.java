@@ -226,8 +226,10 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                     intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(contentData[position].getLink()));
                     printHistory(contentData[position].getName());
-                    new Sync().uploadHistory(context);
-                    new Sync().addToQuickPicks(context,contentData[position].getDataBaseName());
+                    new Thread(() -> {
+                        new Sync().uploadHistory(context);
+                        new Sync().addToQuickPicks(context,contentData[position].getDataBaseName());
+                    }).start();
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
                 }
@@ -330,20 +332,11 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                             intent.putExtra("movie_db",contentData[position].getDataBaseName());
                             intent.putExtra("description",contentData[position].getDate());
                             printHistory(contentData[position].getName());
-                            if(contentData[position].getDataBaseName()!=null) new Sync().addToQuickPicks(context, contentData[position].getDataBaseName());
-                            if(!new File(context.getFilesDir(),"Tutorial.txt").exists())
-                            {
-                                Intent tutorialIntent = new Intent(context,TutorialActivity.class);
-                                tutorialIntent.putExtras(intent.getExtras());
-                                tutorialIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                if(dark) tutorialIntent.putExtra("dark",true);
-                                context.startActivity(tutorialIntent);
-                                try {
-                                    new File(context.getFilesDir(),"Tutorial.txt").createNewFile();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                return;
+                            if(contentData[position].getDataBaseName()!=null){
+                                new Thread(()->{
+                                    new Sync().addToQuickPicks(context, contentData[position].getDataBaseName());
+                                    new Sync().uploadHistory(context);
+                                }).start();
                             }
                             context.startActivity(intent);
                         }
@@ -382,8 +375,10 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                 intent.putExtra("image",data.getImage());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 printHistory(data.getName());
-                new Sync().uploadHistory(context);
-                new Sync().addToQuickPicks(context,data.getDataBaseName());
+                new Thread(()->{
+                    new Sync().uploadHistory(context);
+                    new Sync().addToQuickPicks(context, data.getDataBaseName());
+                }).start();
                 context.startActivity(intent);
                 dialog.dismiss();
             }
@@ -454,8 +449,10 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
                 intent.putExtra("description",contentData[position].getDate());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 printHistory(data.getName());
-                new Sync().uploadHistory(context);
-                new Sync().addToQuickPicks(context,data.getDataBaseName());
+                new Thread(()->{
+                    new Sync().uploadHistory(context);
+                    new Sync().addToQuickPicks(context, data.getDataBaseName());
+                }).start();
                 FirebaseDatabase.getInstance().getReference().addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
