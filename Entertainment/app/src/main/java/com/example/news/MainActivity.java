@@ -109,6 +109,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.security.Permission;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -311,7 +312,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-
     private void showSignOutDialog() {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.sign_out_dialog);
@@ -1488,6 +1488,20 @@ public class MainActivity extends AppCompatActivity {
                         }
                         count++;
                     }
+                    File webSeriesFile = new File(getFilesDir(),"webseries.txt");
+                    if(!webSeriesFile.exists()) {
+                        try {
+                            webSeriesFile.createNewFile();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    FileOutputStream webSeriesOutputStream = null;
+                    try {
+                        webSeriesOutputStream = openFileOutput("webseries.txt",MODE_PRIVATE);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
                     for (i = 1; i <= Integer.parseInt(snapshot.child("comedy").getValue().toString()); i++) {
                         name[count] = snapshot.child("comedy" + i).getValue().toString();
                         link[count] = snapshot.child("comedylink" + i).getValue().toString();
@@ -1498,6 +1512,13 @@ public class MainActivity extends AppCompatActivity {
                             tag[count] = snapshot.child("comedytag" + i).getValue().toString();
                         } catch (Exception e) {
                             tag[count] = snapshot.child("comedy" + i).getValue().toString();
+                        }
+                        if(link[count].equals("webseries")) {
+                            try {
+                                webSeriesOutputStream.write((name[count]+"\n").getBytes());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                         downloadedTempData = downloadedTempData+name[count]+"\n";
                         count++;
@@ -1940,7 +1961,8 @@ public class MainActivity extends AppCompatActivity {
                 while ((str=br.readLine())!=null)
                 {
                     File file = new File(getApplicationContext().getFilesDir(),str);
-                    if(!file.exists()) file.createNewFile();
+                    getContentResolver().delete(FileProvider.getUriForFile(this,BuildConfig.APPLICATION_ID+".provider",file),null,null);
+                    file.createNewFile();
                     fileOutputStream=openFileOutput(str,MODE_PRIVATE);
                     str=br.readLine();
                     if(str==null)
@@ -2051,31 +2073,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     public void broadcastMessage(View view) {
-        FirebaseFirestore.getInstance().collection("Users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                String[] recipients;
-                int i = 0;
-                for(QueryDocumentSnapshot testSnapshot : queryDocumentSnapshots)
-                {
-                    i++;
-                }
-                recipients = new String[i];
-                i=0;
-                for(QueryDocumentSnapshot testSnapshot : queryDocumentSnapshots)
-                {
-                    recipients[i] = testSnapshot.getId().toString();
-                    i++;
-                }
-                Intent mailIntent = new Intent(Intent.ACTION_SENDTO);
-                mailIntent.setData(Uri.parse("mailto:"));
-                mailIntent.putExtra(Intent.EXTRA_EMAIL,"team.entertainment108@gmail.com");
-                mailIntent.putExtra(Intent.EXTRA_BCC,recipients);
-                mailIntent.putExtra(Intent.EXTRA_SUBJECT,"");
-                mailIntent.putExtra(Intent.EXTRA_TEXT,"\n\n\nGet the app here at https://drive.google.com/drive/folders/105N8dwqkgU5k7c-5Zot9wPn6peLICURV");
-                startActivity(mailIntent);
-            }
-        });
+        startActivity(new Intent(this,FirebaseNotificationActivity.class));
     }
 
     @SuppressLint("SetTextI18n")

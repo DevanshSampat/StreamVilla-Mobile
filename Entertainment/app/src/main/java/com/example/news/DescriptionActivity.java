@@ -40,6 +40,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -48,6 +49,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -91,12 +93,41 @@ public class DescriptionActivity extends AppCompatActivity {
     private boolean downloading = false;
     private boolean dark;
     private boolean longClick = false;
+    private String downloadSize;
+    private String developer_email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_description);
         findViewById(R.id.views).setVisibility(View.INVISIBLE);
+        findViewById(R.id.layout).startAnimation(AnimationUtils.loadAnimation(this,R.anim.appear_up));
+        findViewById(R.id.top_layout).startAnimation(AnimationUtils.loadAnimation(this,R.anim.appear_down));
+        FirebaseDatabase.getInstance().getReference("developer_email").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                developer_email = snapshot.getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        findViewById(R.id.image).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if(Objects.requireNonNull(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail()).equals(developer_email)){
+                    Intent intent = new Intent(DescriptionActivity.this,FirebaseNotificationActivity.class);
+                    intent.putExtra("title",getIntent().getStringExtra("name"));
+                    intent.putExtra("text","Now streaming on Entertainment");
+                    intent.putExtra("image",getIntent().getStringExtra("image"));
+                    intent.putExtra("data","search:"+getIntent().getStringExtra("name")+"\nopen:true");
+                    startActivity(intent);
+                }
+                return false;
+            }
+        });
         if(!Settings.System.canWrite(getApplicationContext()))
         {
             Toast.makeText(getApplicationContext(),"Permission required to adjust volume and brightness in video player",Toast.LENGTH_LONG).show();
@@ -109,13 +140,15 @@ public class DescriptionActivity extends AppCompatActivity {
             },1500);
         }
         if(!getIntent().hasExtra("description")) findViewById(R.id.description).setVisibility(View.GONE);
+        loadData();
         findViewById(R.id.play_from_beginning).setVisibility(View.GONE);
         downloaded = false;
         if (new File(getApplicationContext().getExternalFilesDir(null),
                 getIntent().getStringExtra("name").replace(' ', '_').replace(':', '_') + ".mp4").exists()) {
             downloaded = true;
             TextView textView = findViewById(R.id.text_download);
-            textView.setText("Delete from Device");
+            textView.setText("Delete");
+            ((ImageView)findViewById(R.id.download_image)).setImageResource(R.drawable.ic_baseline_delete_24);
         }
         final DocumentReference documentReference = FirebaseFirestore.getInstance().collection("Video Data").document(getIntent().getStringExtra("name"));
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -151,14 +184,34 @@ public class DescriptionActivity extends AppCompatActivity {
             }
         });
         if(getIntent().getStringExtra("movie_db")==null) findViewById(R.id.watchlist).setVisibility(View.GONE);
+        else{
+            FirebaseDatabase.getInstance().getReference(getIntent().getStringExtra("movie_db")+"info").addValueEventListener(new ValueEventListener() {
+                @SuppressLint("SetTextI18n")
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    try{
+                        ((TextView)findViewById(R.id.detailed_description)).setText(snapshot.getValue().toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
         FirebaseFirestore.getInstance().collection("Users").document(UserName.getUsername(getApplicationContext())).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 try{
                     ArrayList<String> watchList = (ArrayList<String>) documentSnapshot.get("Watchlist");
-                    if(watchList.contains(getIntent().getStringExtra("movie_db")))
-                        ((TextView)findViewById(R.id.text_watchlist)).setText("Remove from Watchlist");
+                    if(watchList.contains(getIntent().getStringExtra("movie_db"))) {
+                        ((TextView) findViewById(R.id.text_watchlist)).setText("Added to List");
+                        ((ImageView)findViewById(R.id.list_image)).setImageResource(R.drawable.ic_baseline_check_24);
+                    }
                 } catch (Exception e) {
 
                 }
@@ -169,13 +222,15 @@ public class DescriptionActivity extends AppCompatActivity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View view) {
-                if(((TextView)findViewById(R.id.text_watchlist)).getText().equals("Add to Watchlist")) {
+                if(((TextView)findViewById(R.id.text_watchlist)).getText().equals("Add to List")) {
                     new Sync().addToWatchList(getApplicationContext(), getIntent().getStringExtra("movie_db"));
-                    ((TextView)findViewById(R.id.text_watchlist)).setText("Remove from Watchlist");
+                    ((TextView)findViewById(R.id.text_watchlist)).setText("Added to List");
+                    ((ImageView)findViewById(R.id.list_image)).setImageResource(R.drawable.ic_baseline_check_24);
                 }
                 else{
                     new Sync().removeFromWatchList(getApplicationContext(), getIntent().getStringExtra("movie_db"));
-                    ((TextView)findViewById(R.id.text_watchlist)).setText("Add to Watchlist");
+                    ((TextView)findViewById(R.id.text_watchlist)).setText("Add to List");
+                    ((ImageView)findViewById(R.id.list_image)).setImageResource(R.drawable.ic_baseline_add_to_list_24);
                 }
             }
         });
@@ -199,13 +254,15 @@ public class DescriptionActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
             }
         });
-        if (getIntent().hasExtra("dark")) {
-            findViewById(R.id.layout).setBackgroundColor(Color.parseColor("#000000"));
+        if (getIntent().hasExtra("dark")||new Theme(this).isInDarkMode()) {
+            findViewById(R.id.linear_layout).setBackgroundColor(Color.parseColor("#000000"));
             TextView textView = findViewById(R.id.title);
-            textView.setTextColor(Color.parseColor("#CCCCCC"));
+            textView.setTextColor(Color.WHITE);
             textView = findViewById(R.id.description);
             textView.setTextColor(Color.parseColor("#CCCCCC"));
             textView = findViewById(R.id.views);
+            textView.setTextColor(Color.parseColor("#CCCCCC"));
+            textView = findViewById(R.id.detailed_description);
             textView.setTextColor(Color.parseColor("#CCCCCC"));
             dark=true;
         }
@@ -241,9 +298,6 @@ public class DescriptionActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(!getIntent().hasExtra("link")||new File(getExternalFilesDir(null),
-                        getIntent().getStringExtra("name").replace(':','_')
-                                .replace(' ','_')+".mp4").exists()) return;
                 try {
                     URLConnection connection = new URL(getIntent().getStringExtra("link")).openConnection();
                     connection.connect();
@@ -267,7 +321,12 @@ public class DescriptionActivity extends AppCompatActivity {
                         @SuppressLint("SetTextI18n")
                         @Override
                         public void run() {
-                            ((TextView)findViewById(R.id.text_download)).setText("Download ("+ finalString +" "+ finalIndex+")");
+                            downloadSize = finalString+" "+finalIndex;
+                            if(!getIntent().hasExtra("link")||new File(getExternalFilesDir(null),
+                                    getIntent().getStringExtra("name").replace(':','_')
+                                            .replace(' ','_')+".mp4").exists()) return;
+                            ((TextView)findViewById(R.id.text_download)).setText(finalString+" "+finalIndex);
+                            ((ImageView)findViewById(R.id.download_image)).setImageResource(R.drawable.ic_baseline_arrow_download_24);
                         }
                     });
                 } catch (IOException e) {
@@ -339,31 +398,24 @@ public class DescriptionActivity extends AppCompatActivity {
                 if (minute > 0) stringBuilder.append(minute + "min");
                 findViewById(R.id.play_from_beginning).setVisibility(View.VISIBLE);
                 if (hour == 0 && minute == 0) {
-                    stringBuilder.append("Beginning");
+                    stringBuilder.append("Play");
                     findViewById(R.id.play_from_beginning).setVisibility(View.GONE);
                 }
                 TextView play_text = findViewById(R.id.play_text);
-                play_text.setText("Continue From " + stringBuilder.toString());
-                if (position == 0) play_text.setText("Play from Beginning");
+                play_text.setText(stringBuilder.toString());
+                if (position == 0) play_text.setText("Play");
             } catch (Exception exception) {
                 //Nothing
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ScrollView scrollView = findViewById(R.id.layout);
-                scrollView.fullScroll(View.FOCUS_DOWN);
-            }
-        }, 500);
         downloaded = false;
         if (new File(getApplicationContext().getExternalFilesDir(null),
                 getIntent().getStringExtra("name").replace(' ', '_').replace(':', '_') + ".mp4").exists()) {
             downloaded = true;
             textView = findViewById(R.id.play_text);
-            textView.setText(textView.getText().toString() + " (Offline)");
+            textView.setText(textView.getText().toString() + " Offline");
         }
     }
 
@@ -382,7 +434,7 @@ public class DescriptionActivity extends AppCompatActivity {
         dialog.setCancelable(true);
         TextView textView = dialog.findViewById(R.id.text_warning);
         textView.setText("Do you want to delete "+getIntent().getStringExtra("name")+"?");
-        if(getIntent().hasExtra("dark")) {
+        if(getIntent().hasExtra("dark")||new Theme(this).isInDarkMode()) {
             textView = dialog.findViewById(R.id.text_warning);
             CardView cardView = dialog.findViewById(R.id.delete_card);
             textView.setTextColor(Color.parseColor("#CCCCCC"));
@@ -458,7 +510,8 @@ public class DescriptionActivity extends AppCompatActivity {
             if(new File(getApplicationContext().getExternalFilesDir(null),
                     getIntent().getStringExtra("name").replace(' ', '_').replace(':', '_') + ".mp4").exists()) {
                 TextView textView = findViewById(R.id.text_download);
-                textView.setText("Delete from Device");
+                textView.setText("Delete");
+                ((ImageView)findViewById(R.id.download_image)).setImageResource(R.drawable.ic_baseline_delete_24);
             }
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(getIntent().getStringExtra("link")));
             request.setTitle(getIntent().getStringExtra("name"));
@@ -487,10 +540,6 @@ public class DescriptionActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                ((ProgressBar)findViewById(R.id.download_progress)).setProgress(0);
-                ObjectAnimator progressAnimator = ObjectAnimator.ofInt((ProgressBar)findViewById(R.id.download_progress),"progress",100,0);
-                progressAnimator.setDuration(1000);
-                progressAnimator.start();
                 DownloadFileData.setText("Fetching Link");
                 DownloadFileData.setPercent(0);
                 new Handler().postDelayed(new Runnable() {
@@ -500,7 +549,8 @@ public class DescriptionActivity extends AppCompatActivity {
                     }
                 },1000);
                 TextView textView = findViewById(R.id.text_download);
-                textView.setText("Delete from Device");
+                textView.setText("Delete");
+                ((ImageView)findViewById(R.id.download_image)).setImageResource(R.drawable.ic_baseline_delete_24);
                 File file = new File(getApplicationContext().getFilesDir(),"download_id_for_"+getIntent().getStringExtra("name")
                         .replace(':','_').replace(' ','_')+".txt");
                 if(!file.exists()) {
@@ -527,7 +577,9 @@ public class DescriptionActivity extends AppCompatActivity {
 
     private void delete() {
         TextView textView = findViewById(R.id.text_download);
-        textView.setText("Save to Device");
+        textView.setText("Save");
+        ((ImageView)findViewById(R.id.download_image)).setImageResource(R.drawable.ic_baseline_arrow_download_24);
+        if(downloadSize!=null) textView.setText(downloadSize);
         new File(getApplicationContext().getFilesDir(),"download_id_for_"+getIntent().getStringExtra("name")
                 .replace(':','_').replace(' ','_')+".txt").delete();
         if(downloadId>0)
@@ -563,22 +615,21 @@ public class DescriptionActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Deleted " + getIntent().getStringExtra("name"), Toast.LENGTH_SHORT).show();
         onResume();
     }
+    @SuppressLint("SetTextI18n")
     private void getDownloadProgress()
     {
-        if(!new File(getApplicationContext().getFilesDir(),"isDownloading.txt").exists()) return;
-        final TextView textView = findViewById(R.id.play_text);
-        final ProgressBar progressBar = findViewById(R.id.download_progress);
-        if(progressBar.getProgress()==progressBar.getMax()) progressBar.setProgress(0);
-        ObjectAnimator progressAnimator = ObjectAnimator.ofInt(progressBar,"progress",progressBar.getProgress(),DownloadFileData.getPercent());
-        progressAnimator.setDuration(1000);
-        progressAnimator.start();
-        if(DownloadFileData.getText()!=null) textView.setText(DownloadFileData.getText());
+        if(!new File(getApplicationContext().getFilesDir(),"isDownloading.txt").exists()) {
+            ((TextView)findViewById(R.id.play_text)).setText("Play");
+            loadData();
+            return;
+        }
+        String str = DownloadFileData.getPercent()+"%";
+        if(DownloadFileData.getText().equals("Long Press to Resume")) str = str + "\nPaused";
+        ((TextView)findViewById(R.id.play_text)).setText(str);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                progressBar.setProgress(DownloadFileData.getPercent());
-                if(new File(getApplicationContext().getFilesDir(),"isDownloading.txt").exists()) getDownloadProgress();
-                else textView.setText("Watch Now");
+                getDownloadProgress();
             }
         },1000);
     }
@@ -655,56 +706,10 @@ public class DescriptionActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         new Handler().postDelayed(new Runnable() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void run() {
-
-
-                try {
-                    FileInputStream fis = null;
-                    fis = getApplicationContext().openFileInput(getIntent().getStringExtra("name").replace(' ', '+') + ".txt");
-                    BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
-                    try {
-                        String str = br.readLine();
-                        String temp = str;
-                        if(str.contains("\t")) str=str.substring(0,str.indexOf('\t'));
-                        position = Integer.parseInt(str);
-                        position = position / 1000;
-                        int time_watched = position;
-                        hour = position / 3600;
-                        minute = (position / 60) % 60;
-                        StringBuilder stringBuilder = new StringBuilder();
-                        if (hour > 0) stringBuilder.append(hour + "hr ");
-                        if (minute > 0) stringBuilder.append(minute + "min");
-                        findViewById(R.id.play_from_beginning).setVisibility(View.VISIBLE);
-                        if (hour == 0 && minute == 0) {
-                            stringBuilder.append("Beginning");
-                            findViewById(R.id.play_from_beginning).setVisibility(View.GONE);
-                        }
-                        TextView play_text = findViewById(R.id.play_text);
-                        play_text.setText("Continue From " + stringBuilder.toString());
-                        if (position == 0) play_text.setText("Play from Beginning");
-                        if (new File(getApplicationContext().getExternalFilesDir(null),
-                                getIntent().getStringExtra("name").replace(' ', '_').replace(':', '_') + ".mp4").exists()) {
-                            play_text.setText(play_text.getText().toString() + " (Offline)");
-                        }
-                        if(temp.contains("\t"))
-                        {
-                            temp = temp.substring(temp.indexOf('\t')+1);
-                            if(temp.contains("\t")) temp = temp.substring(0,temp.indexOf('\t'));
-                            int total_time = (Integer.parseInt(temp))/1000;
-                            ProgressBar progressBar = findViewById(R.id.progress_of_movie);
-                            progressBar.setMax(total_time);
-                            ObjectAnimator progressAnimator = ObjectAnimator.ofInt(progressBar,"progress",0,time_watched);
-                            progressAnimator.setDuration(500);
-                            progressAnimator.start();
-                            progressBar.setProgress(time_watched);
-                        }
-                    } catch (Exception exception) {
-                        //Nothing
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                loadData();
             }
         }, 1000);
         if(getIntent().hasExtra("no_ui_thread")||new File(getApplicationContext().getFilesDir(),"isDownloading.txt").exists())
@@ -717,9 +722,74 @@ public class DescriptionActivity extends AppCompatActivity {
             ProgressBar progressBar = findViewById(R.id.download_progress);
             progressBar.setProgress(100);
             TextView textView = findViewById(R.id.play_text);
-            textView.setText("Watch Now");
+            textView.setText("Play");
         }
     }
+
+    private void loadData() {
+        try {
+            FileInputStream fis = null;
+            fis = getApplicationContext().openFileInput(getIntent().getStringExtra("name").replace(' ', '+') + ".txt");
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
+            try {
+                String str = br.readLine();
+                String temp = str;
+                if(str.contains("\t")) str=str.substring(0,str.indexOf('\t'));
+                position = Integer.parseInt(str);
+                position = position / 1000;
+                int time_watched = position;
+                hour = position / 3600;
+                minute = (position / 60) % 60;
+                StringBuilder stringBuilder = new StringBuilder();
+                if (hour > 0) stringBuilder.append(hour + "h");
+                if (minute > 0) stringBuilder.append(minute + "m");
+                findViewById(R.id.play_from_beginning).setVisibility(View.VISIBLE);
+                if (hour == 0 && minute == 0) {
+                    stringBuilder.append("Play");
+                    findViewById(R.id.play_from_beginning).setVisibility(View.GONE);
+                }
+                TextView play_text = findViewById(R.id.play_text);
+                play_text.setText(stringBuilder.toString());
+                if (position == 0) play_text.setText("Play");
+                if (new File(getApplicationContext().getExternalFilesDir(null),
+                        getIntent().getStringExtra("name").replace(' ', '_').replace(':', '_') + ".mp4").exists()) {
+                    play_text.setText(play_text.getText().toString() + "\nOffline");
+                }
+                if(temp.contains("\t"))
+                {
+                    temp = temp.substring(temp.indexOf('\t')+1);
+                    if(temp.contains("\t")) temp = temp.substring(0,temp.indexOf('\t'));
+                    int total_time = (Integer.parseInt(temp))/1000;
+                    ProgressBar progressBar = findViewById(R.id.progress_of_movie);
+                    progressBar.setMax(total_time);
+                    progressBar.setProgress(time_watched);
+                }
+                try {
+                    if (getIntent().getStringExtra("image").substring(0, 4).equals("http")) {
+                        File file = new File(getExternalFilesDir(null), ".screenshot_of_" + getIntent().getStringExtra("name")
+                                .replace(' ', '_').replace(':', '_') + ".jpeg");
+                        if (file.exists()) {
+                            ((ImageView)findViewById(R.id.image)).setImageBitmap(BitmapFactory.decodeFile(file.getPath()));
+                        } else
+                            Picasso.with(DescriptionActivity.this).load(Uri.parse(getIntent().getStringExtra("image"))).into((ImageView) findViewById(R.id.image));
+                    }
+                    else
+                    {
+                        ImageView imageView = findViewById(R.id.image);
+                        Bitmap bitmap = BitmapFactory.decodeFile(getIntent().getStringExtra("image"));
+                        imageView.setImageBitmap(bitmap);
+                    }
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception exception) {
+                //Nothing
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void printHistory(String str) {
         try {
             printDate();
@@ -813,7 +883,16 @@ public class DescriptionActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
-        overridePendingTransition(R.anim.right_start,R.anim.right_end);
+        findViewById(R.id.top_layout).startAnimation(AnimationUtils.loadAnimation(this,R.anim.disappear_up));
+        findViewById(R.id.layout).startAnimation(AnimationUtils.loadAnimation(this,R.anim.disappear_down));
+        findViewById(R.id.top_layout).setVisibility(View.INVISIBLE);
+        findViewById(R.id.layout).setVisibility(View.INVISIBLE);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                DescriptionActivity.super.onBackPressed();
+                overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
+            }
+        },230);
     }
 }

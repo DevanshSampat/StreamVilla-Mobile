@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 import androidx.mediarouter.app.MediaRouteButton;
 
 import android.Manifest;
@@ -1130,6 +1131,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 complete=true;
+                getContentResolver().delete(FileProvider.getUriForFile(VideoPlayerActivity.this,BuildConfig.APPLICATION_ID+".provider",
+                        new File(getExternalFilesDir(null),".screenshot_of_"+getIntent().getStringExtra("name")
+                                .replace(' ','_').replace(':','_')+".jpeg")),null,null);
                 onPause();
                 if(getIntent().hasExtra("dbName")){
                     goToNextEpisode();
@@ -2275,25 +2279,27 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
 
     private void takeScreenshot(){
         if(!getIntent().hasExtra("online")) return;
-        Bitmap bitmap = Bitmap.createBitmap(videoView.getMeasuredWidth(),videoView.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-        try{
-            PixelCopy.request(videoView, bitmap, i -> {
-                try {
-                    FileOutputStream fos = new FileOutputStream(new File(getExternalFilesDir(null),".screenshot_of_"+
-                            getIntent().getStringExtra("name").replace(':','_').replace(' ','_')+
-                            ".jpeg"));
-                    bitmap.compress(Bitmap.CompressFormat.JPEG,60,fos);
-                    fos.flush();
-                    fos.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            },new Handler());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
+        if(findViewById(R.id.load).getVisibility()!=View.VISIBLE) {
+            Bitmap bitmap = Bitmap.createBitmap(videoView.getMeasuredWidth(), videoView.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+            try {
+                PixelCopy.request(videoView, bitmap, i -> {
+                    try {
+                        FileOutputStream fos = new FileOutputStream(new File(getExternalFilesDir(null), ".screenshot_of_" +
+                                getIntent().getStringExtra("name").replace(':', '_').replace(' ', '_') +
+                                ".jpeg"));
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 60, fos);
+                        fos.flush();
+                        fos.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }, new Handler());
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
         }
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -2303,10 +2309,4 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
         },10000);
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        finish();
-        startActivity(intent);
-    }
 }

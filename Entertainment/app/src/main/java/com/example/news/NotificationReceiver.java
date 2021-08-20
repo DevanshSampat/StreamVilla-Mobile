@@ -1,5 +1,17 @@
 package com.example.news;
 
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.DAY_OF_WEEK;
+import static java.util.Calendar.FRIDAY;
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.MILLISECOND;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.MONDAY;
+import static java.util.Calendar.SECOND;
+import static java.util.Calendar.SUNDAY;
+import static java.util.Calendar.WEDNESDAY;
+
+import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -28,7 +40,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Objects;
 
 public class NotificationReceiver extends BroadcastReceiver {
@@ -36,91 +55,76 @@ public class NotificationReceiver extends BroadcastReceiver {
     private String name;
     private String image;
     private String date;
+    @SuppressLint("UnspecifiedImmutableFlag")
     @Override
     public void onReceive(final Context context, Intent intent) {
         Log.println(Log.ASSERT,"Pending Intent","Delivered");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                FirebaseDatabase.getInstance().getReference().addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Log.println(Log.ASSERT, "DB", "connected");
-                        int i, count = 0;
-                        ContentData contentData[] = new ContentData[Integer.parseInt(snapshot.child("movie").getValue().toString())
-                                + Integer.parseInt(snapshot.child("classic").getValue().toString())];
-                        for (i = 1; i <= Integer.parseInt(snapshot.child("movie").getValue().toString()); i++) {
-                            contentData[count] = new ContentData(snapshot.child("movie" + i).getValue().toString(),
-                                    snapshot.child("movieimage" + i).getValue().toString(),
-                                    snapshot.child("movielink" + i).getValue().toString(),
-                                    snapshot.child("moviedate" + i).getValue().toString());
-                            count++;
-                        }
-                        for (i = 1; i <= Integer.parseInt(snapshot.child("classic").getValue().toString()); i++) {
-                            contentData[count] = new ContentData(snapshot.child("classic" + i).getValue().toString(),
-                                    snapshot.child("classicimage" + i).getValue().toString(),
-                                    snapshot.child("classiclink" + i).getValue().toString(),
-                                    snapshot.child("classicdate" + i).getValue().toString());
-                            count++;
-                        }
-                        int select = (int) (System.currentTimeMillis() % contentData.length);
-                        Log.println(Log.ASSERT, "Random", "picked");
-                        name = contentData[select].getName();
-                        image = contentData[select].getImage();
-                        date = contentData[select].getDate().substring(0, 4);
-                        String message = "Want to try something new? Let us help";
-                        if (new File(context.getFilesDir(), name.replace(' ', '+') + ".txt").exists())
-                            message = "Pick-up from where you left off";
-                        Intent startIntent = new Intent(context, SplashActivity.class);
-                        startIntent.putExtra("search", name);
-                        startIntent.putExtra("open", true);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, startIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                        final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "personal")
-                                .setAutoCancel(true)
-                                .setSmallIcon(R.drawable.notification)
-                                .setColor(Color.RED)
-                                .setSound(null)
-                                .setContentTitle(name + " (" + date + ")")
-                                .setContentText(message)
-                                .setContentIntent(pendingIntent);
-                        Bitmap bitmap;
-                        bitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.app_icon);
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        File file;
+        if(day==MONDAY||day==WEDNESDAY||day==FRIDAY||day==SUNDAY){
+            file = new File(context.getFilesDir(),"webseries.txt");
+        }
+        else file = new File(context.getFilesDir(),"DownloadedVideos.txt");
+        ArrayList<String> contentList = new ArrayList<>();
+        String str;
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(context.openFileInput(file.getName())));
+            while((str=br.readLine())!=null) contentList.add(str);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int randomNumber = calendar.get(DAY_OF_MONTH)+ calendar.get(DAY_OF_WEEK)+calendar.get(HOUR_OF_DAY)
+                +calendar.get(MINUTE)+calendar.get(SECOND)+calendar.get(MILLISECOND);
+        randomNumber = randomNumber%contentList.size();
+        String title = contentList.get(randomNumber);
+        String description = "Want to try something new? Let us help!";
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,"general");
+        builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.app_icon));
+        builder.setColor(Color.RED);
+        builder.setSmallIcon(R.drawable.notification);
+        builder.setContentTitle(title);
+        builder.setAutoCancel(true);
+        builder.setContentText(description);
+        Intent searchIntent = new Intent(context,SearchActivity.class);
+        searchIntent.putExtra("signed_in",true);
+        searchIntent.putExtra("search",title);
+        searchIntent.putExtra("open",true);
+        builder.setContentIntent(PendingIntent.getActivity(context,45,searchIntent,PendingIntent.FLAG_UPDATE_CURRENT));
+        if(new File(context.getFilesDir(),title.replace(' ','+')+".txt").exists()){
+            description = "Pick up from where you left off";
+            builder.setContentText(description);
+            if(file.getName().equals("webseries.txt")) {
+                int season;
+                int episode;
+                try {
+                    FileInputStream fis = context.openFileInput(title.replace(' ','+')+".txt");
+                    str = new BufferedReader(new InputStreamReader(fis)).readLine();
+                    season = Integer.parseInt(str.substring(0,str.indexOf('\t')));
+                    str = str.substring(str.indexOf('\t')+1);
+                    episode = Integer.parseInt(str.substring(0,str.indexOf('\t')));
+                    String name = title+" : "+"S"+season+"E"+episode;
+                    if((file = new File(context.getExternalFilesDir(null),".screenshot_of_"+name.replace(':','_')
+                            .replace(' ','_')+".jpeg")).exists()){
+                        Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
                         builder.setLargeIcon(bitmap);
-                        Log.println(Log.ASSERT, "Storage", "Accessed");
-                        notification = builder.build();
-                        NotificationManagerCompat.from(context).notify(999, notification);
-                        Log.println(Log.ASSERT, "Notification", "Sent");
-                        try {
-                            Picasso.with(context).load(image).into(new Target() {
-                                @Override
-                                public void onBitmapLoaded(Bitmap bit, Picasso.LoadedFrom from) {
-                                    builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bit));
-                                    notification = builder.build();
-                                    NotificationManagerCompat.from(context).cancel(999);
-                                    NotificationManagerCompat.from(context).notify(999, notification);
-                                    Log.println(Log.ASSERT, "Content", name);
-                                }
-
-                                @Override
-                                public void onBitmapFailed(Drawable errorDrawable) {
-
-                                }
-
-                                @Override
-                                public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                                }
-                            });
-                        } catch (Exception e) {}
+                        builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(null));
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.println(Log.ASSERT, "Status", "Cancelled");
-                    }
-                });
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        }).start();
-
+            else if((file = new File(context.getExternalFilesDir(null),".screenshot_of_"+title.replace(':','_')
+                    .replace(' ','_')+".jpeg")).exists()) {
+                Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
+                builder.setLargeIcon(bitmap);
+                builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(null));
+            }
+        }
+        NotificationManagerCompat.from(context).notify(207, builder.build());
     }
 }

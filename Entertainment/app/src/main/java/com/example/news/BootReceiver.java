@@ -32,6 +32,7 @@ public class BootReceiver extends BroadcastReceiver {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.HOUR_OF_DAY,13);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent alarmingIntent = new Intent(context,NotificationReceiver.class);
         alarmingIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);

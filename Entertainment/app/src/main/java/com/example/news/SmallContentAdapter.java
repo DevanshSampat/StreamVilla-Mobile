@@ -254,20 +254,18 @@ public class SmallContentAdapter extends RecyclerView.Adapter<SmallContentAdapte
                     if(contentData[position].getDataBaseName()!=null) intent.putExtra("add_to_quick_picks",contentData[position].getDataBaseName());
                     if(dark) intent.putExtra("dark",true);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent,ActivityOptionsCompat.makeSceneTransitionAnimation((Activity)context,holder.imageView,holder.imageView.getTransitionName()).toBundle());
+                    context.startActivity(intent);
+                    ((Activity)context).overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
                 }
                 else if(contentData[position].getLink().equals("webseries")){
-                    /*intent = new Intent(context,SeasonPickerActivity.class);
+                    intent = new Intent(context,WebSeriesDescriptionActivity.class);
                     intent.putExtra("name",contentData[position].getName());
                     intent.putExtra("dbName",contentData[position].getDataBaseName());
                     intent.putExtra("image",contentData[position].getImage());
+                    intent.putExtra("description",contentData[position].getDate());
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    printHistory(contentData[position].getName());
-                    new Sync().uploadHistory(context);
-                    new Sync().addToQuickPicks(context,contentData[position].getDataBaseName());
                     context.startActivity(intent);
-                */
-                    showWatchPopUpForWebSeries(position);
+                    ((Activity)context).overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
                 }
                 else
                 {

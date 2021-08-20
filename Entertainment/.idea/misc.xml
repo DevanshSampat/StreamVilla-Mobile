@@ -3,8 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_description.xml" value="0.13858695652173914" />
+        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_description.xml" value="0.152" />
+        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_firebase_notification.xml" value="0.1358695652173913" />
+        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_main.xml" value="0.16621376811594202" />
+        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_updater.xml" value="0.22592592592592592" />
         <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_video_player.xml" value="0.13858695652173914" />
+        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_web_series_description.xml" value="0.22592592592592592" />
+        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/recycle_item.xml" value="0.22592592592592592" />
         <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/small_recycle_item.xml" value="0.13858695652173914" />
         <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/watch_pop_up.xml" value="0.13858695652173914" />
       </map>

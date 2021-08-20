@@ -47,8 +47,8 @@ import static android.content.Context.MODE_APPEND;
 import static android.content.Context.MODE_PRIVATE;
 
 public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHolder>{
-    ContentData contentData[];
-    Context context;
+    private ContentData contentData[];
+    private Context context;
     private ViewHolder holder;
     private int position;
     private boolean dark;
@@ -191,48 +191,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent;
-                if(contentData[position].getLink().equals("")||contentData[position].getLink().contains("(video)"))
-                {
-                    intent = new Intent(context,DescriptionActivity.class);
-                    if(contentData[position].getLink().length()>7) intent.putExtra("link",contentData[position].getLink().substring("(video)".length()));
-                    intent.putExtra("name",contentData[position].getName());
-                    intent.putExtra("image",contentData[position].getImage());
-                    if(contentData[position].getDate()!=null) intent.putExtra("description",contentData[position].getDate());
-                    if(contentData[position].getDataBaseName()!=null) intent.putExtra("add_to_quick_picks",contentData[position].getDataBaseName());
-                    intent.putExtra("movie_db",contentData[position].getDataBaseName());
-                    if(dark) intent.putExtra("dark",true);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    Pair<View, String> pair1 = Pair.create((View)holder.imageView,holder.imageView.getTransitionName());
-                    //Pair<View, String> pair2 = Pair.create((View)holder.textView,holder.textView.getTransitionName());
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity)context,pair1);
-                    context.startActivity(intent,options.toBundle());
-                }
-                else if(contentData[position].getLink().equals("webseries")){
-                    /*intent = new Intent(context,SeasonPickerActivity.class);
-                    intent.putExtra("name",contentData[position].getName());
-                    intent.putExtra("dbName",contentData[position].getDataBaseName());
-                    intent.putExtra("image",contentData[position].getImage());
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    printHistory(contentData[position].getName());
-                    new Sync().uploadHistory(context);
-                    new Sync().addToQuickPicks(context,contentData[position].getDataBaseName());
-                    context.startActivity(intent);
-                */
-                    showWatchPopUpForWebSeries(position);
-                }
-                else
-                {
-                    intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(contentData[position].getLink()));
-                    printHistory(contentData[position].getName());
-                    new Thread(() -> {
-                        new Sync().uploadHistory(context);
-                        new Sync().addToQuickPicks(context,contentData[position].getDataBaseName());
-                    }).start();
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
-                }
+                clickItem(position);
             }
         });
         holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -350,8 +309,48 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ViewHold
         });
     }
 
+    public void clickItem(int position) {
+        Intent intent;
+        if(contentData[position].getLink().equals("")||contentData[position].getLink().contains("(video)"))
+        {
+            intent = new Intent(context,DescriptionActivity.class);
+            if(contentData[position].getLink().length()>7) intent.putExtra("link",contentData[position].getLink().substring("(video)".length()));
+            intent.putExtra("name",contentData[position].getName());
+            intent.putExtra("image",contentData[position].getImage());
+            if(contentData[position].getDate()!=null) intent.putExtra("description",contentData[position].getDate());
+            if(contentData[position].getDataBaseName()!=null) intent.putExtra("add_to_quick_picks",contentData[position].getDataBaseName());
+            intent.putExtra("movie_db",contentData[position].getDataBaseName());
+            if(dark) intent.putExtra("dark",true);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+            ((Activity)context).overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
+        }
+        else if(contentData[position].getLink().equals("webseries")){
+            intent = new Intent(context,WebSeriesDescriptionActivity.class);
+            intent.putExtra("name",contentData[position].getName());
+            intent.putExtra("dbName",contentData[position].getDataBaseName());
+            intent.putExtra("image",contentData[position].getImage());
+            intent.putExtra("description",contentData[position].getDate());
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+            ((Activity)context).overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
+        }
+        else
+        {
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(contentData[position].getLink()));
+            printHistory(contentData[position].getName());
+            new Thread(() -> {
+                new Sync().uploadHistory(context);
+                new Sync().addToQuickPicks(context,contentData[position].getDataBaseName());
+            }).start();
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        }
+    }
+
     @SuppressLint("SetTextI18n")
-    private void showWatchPopUpForWebSeries(final int position) {
+    public void showWatchPopUpForWebSeries(final int position) {
         final ContentData data = contentData[position];
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.watch_pop_up);

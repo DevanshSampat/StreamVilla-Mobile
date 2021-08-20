@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 
 public class HistoryActivity extends AppCompatActivity {
 
+    private String historyData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,8 +28,6 @@ public class HistoryActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
-                scrollView.fullScroll(View.FOCUS_DOWN);
             }
         }, 1000);
         new Handler().postDelayed(new Runnable() {
@@ -49,24 +48,40 @@ public class HistoryActivity extends AppCompatActivity {
     }
     private void getHistory()
     {
-        String historyData = null;
-        try {
-            FileInputStream fis = null;
-            fis = this.openFileInput("History.txt");
-            BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
-            StringBuilder sb = new StringBuilder();
-            String str;
-            while ((str=br.readLine())!=null)
-            {
-                sb.append(str).append("\n");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    FileInputStream fis = null;
+                    fis = openFileInput("History.txt");
+                    BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
+                    StringBuilder sb = new StringBuilder();
+                    String str;
+                    while ((str=br.readLine())!=null)
+                    {
+                        sb.append(str).append("\n");
+                    }
+                    historyData = sb.toString();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView textView = (TextView) findViewById(R.id.history);
+                        textView.setText(historyData);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                ScrollView scrollView = (ScrollView) findViewById(R.id.scroll);
+                                scrollView.fullScroll(View.FOCUS_DOWN);
+                            }
+                        }, 1000);
+                    }
+                });
             }
-            historyData = sb.toString();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        TextView textView = (TextView) findViewById(R.id.history);
-        textView.setText(historyData);
-    }
+        }).start();}
 }

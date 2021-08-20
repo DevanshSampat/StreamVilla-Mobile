@@ -633,116 +633,101 @@ public class SearchActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 int i;
                 int count=0;
-                if(getIntent().hasExtra("signed_in")) {
-                    link = new String[Integer.parseInt(snapshot.child("comedy").getValue().toString())
-                            + Integer.parseInt(snapshot.child("sport").getValue().toString())
-                            + Integer.parseInt(snapshot.child("movie").getValue().toString())
-                            + Integer.parseInt(snapshot.child("classic").getValue().toString())
-                            + Integer.parseInt(snapshot.child("kids").getValue().toString())
-                            + Integer.parseInt(snapshot.child("news").getValue().toString())];
-                    dbName = new String[Integer.parseInt(snapshot.child("comedy").getValue().toString())
-                            + Integer.parseInt(snapshot.child("sport").getValue().toString())
-                            + Integer.parseInt(snapshot.child("movie").getValue().toString())
-                            + Integer.parseInt(snapshot.child("classic").getValue().toString())
-                            + Integer.parseInt(snapshot.child("kids").getValue().toString())
-                            + Integer.parseInt(snapshot.child("news").getValue().toString())];
-                    name = new String[Integer.parseInt(snapshot.child("comedy").getValue().toString())
-                            + Integer.parseInt(snapshot.child("sport").getValue().toString())
-                            + Integer.parseInt(snapshot.child("movie").getValue().toString())
-                            + Integer.parseInt(snapshot.child("classic").getValue().toString())
-                            + Integer.parseInt(snapshot.child("kids").getValue().toString())
-                            + Integer.parseInt(snapshot.child("news").getValue().toString())];
-                    image = new String[Integer.parseInt(snapshot.child("comedy").getValue().toString())
-                            + Integer.parseInt(snapshot.child("sport").getValue().toString())
-                            + Integer.parseInt(snapshot.child("movie").getValue().toString())
-                            + Integer.parseInt(snapshot.child("classic").getValue().toString())
-                            + Integer.parseInt(snapshot.child("kids").getValue().toString())
-                            + Integer.parseInt(snapshot.child("news").getValue().toString())];
-                    date = new String[Integer.parseInt(snapshot.child("comedy").getValue().toString())
-                            + Integer.parseInt(snapshot.child("sport").getValue().toString())
-                            + Integer.parseInt(snapshot.child("movie").getValue().toString())
-                            + Integer.parseInt(snapshot.child("classic").getValue().toString())
-                            + Integer.parseInt(snapshot.child("kids").getValue().toString())
-                            + Integer.parseInt(snapshot.child("news").getValue().toString())];
-                    tag = new String[Integer.parseInt(snapshot.child("comedy").getValue().toString())
-                            + Integer.parseInt(snapshot.child("sport").getValue().toString())
-                            + Integer.parseInt(snapshot.child("movie").getValue().toString())
-                            + Integer.parseInt(snapshot.child("classic").getValue().toString())
-                            + Integer.parseInt(snapshot.child("kids").getValue().toString())
-                            + Integer.parseInt(snapshot.child("news").getValue().toString())];
-                    for (i=Integer.parseInt(snapshot.child("comedy").getValue().toString());i>=1;i--) {
-                        name[count] = snapshot.child("comedy" + i).getValue().toString();
-                        link[count] = snapshot.child("comedylink" + i).getValue().toString();
-                        date[count] = "TV show : "+snapshot.child("comedydate"+i).getValue().toString();
-                        dbName[count]="comedy"+i;
-                        image[count] = snapshot.child("comedyimage"+i).getValue().toString();
-                        try {
-                            tag[count] = snapshot.child("comedytag"+i).getValue().toString();
-                        }
-                        catch (Exception e)
-                        {
-                            tag[count] = snapshot.child("comedy"+i).getValue().toString();
-                        }
-                        count++;
+                link = new String[Integer.parseInt(snapshot.child("comedy").getValue().toString())
+                        + Integer.parseInt(snapshot.child("sport").getValue().toString())
+                        + Integer.parseInt(snapshot.child("movie").getValue().toString())
+                        + Integer.parseInt(snapshot.child("classic").getValue().toString())
+                        + Integer.parseInt(snapshot.child("kids").getValue().toString())
+                        + Integer.parseInt(snapshot.child("news").getValue().toString())];
+                dbName = new String[Integer.parseInt(snapshot.child("comedy").getValue().toString())
+                        + Integer.parseInt(snapshot.child("sport").getValue().toString())
+                        + Integer.parseInt(snapshot.child("movie").getValue().toString())
+                        + Integer.parseInt(snapshot.child("classic").getValue().toString())
+                        + Integer.parseInt(snapshot.child("kids").getValue().toString())
+                        + Integer.parseInt(snapshot.child("news").getValue().toString())];
+                name = new String[Integer.parseInt(snapshot.child("comedy").getValue().toString())
+                        + Integer.parseInt(snapshot.child("sport").getValue().toString())
+                        + Integer.parseInt(snapshot.child("movie").getValue().toString())
+                        + Integer.parseInt(snapshot.child("classic").getValue().toString())
+                        + Integer.parseInt(snapshot.child("kids").getValue().toString())
+                        + Integer.parseInt(snapshot.child("news").getValue().toString())];
+                image = new String[Integer.parseInt(snapshot.child("comedy").getValue().toString())
+                        + Integer.parseInt(snapshot.child("sport").getValue().toString())
+                        + Integer.parseInt(snapshot.child("movie").getValue().toString())
+                        + Integer.parseInt(snapshot.child("classic").getValue().toString())
+                        + Integer.parseInt(snapshot.child("kids").getValue().toString())
+                        + Integer.parseInt(snapshot.child("news").getValue().toString())];
+                date = new String[Integer.parseInt(snapshot.child("comedy").getValue().toString())
+                        + Integer.parseInt(snapshot.child("sport").getValue().toString())
+                        + Integer.parseInt(snapshot.child("movie").getValue().toString())
+                        + Integer.parseInt(snapshot.child("classic").getValue().toString())
+                        + Integer.parseInt(snapshot.child("kids").getValue().toString())
+                        + Integer.parseInt(snapshot.child("news").getValue().toString())];
+                tag = new String[Integer.parseInt(snapshot.child("comedy").getValue().toString())
+                        + Integer.parseInt(snapshot.child("sport").getValue().toString())
+                        + Integer.parseInt(snapshot.child("movie").getValue().toString())
+                        + Integer.parseInt(snapshot.child("classic").getValue().toString())
+                        + Integer.parseInt(snapshot.child("kids").getValue().toString())
+                        + Integer.parseInt(snapshot.child("news").getValue().toString())];
+                for (i=Integer.parseInt(snapshot.child("comedy").getValue().toString());i>=1;i--) {
+                    name[count] = snapshot.child("comedy" + i).getValue().toString();
+                    link[count] = snapshot.child("comedylink" + i).getValue().toString();
+                    date[count] = "TV show : "+snapshot.child("comedydate"+i).getValue().toString();
+                    dbName[count]="comedy"+i;
+                    image[count] = snapshot.child("comedyimage"+i).getValue().toString();
+                    try {
+                        tag[count] = snapshot.child("comedytag"+i).getValue().toString();
                     }
-                    for (i=Integer.parseInt(snapshot.child("movie").getValue().toString());i>=1;i--) {
-                        name[count] = snapshot.child("movie" + i).getValue().toString();
-                        link[count] = snapshot.child("movielink" + i).getValue().toString();
-                        date[count] = "Movie : "+snapshot.child("moviedate"+i).getValue().toString();
-                        image[count] = snapshot.child("movieimage"+i).getValue().toString();
-                        dbName[count]="movie"+i;
-                        try {
-                            tag[count] = snapshot.child("movietag"+i).getValue().toString();
-                        }
-                        catch (Exception e)
-                        {
-                            tag[count] = snapshot.child("movie"+i).getValue().toString();
-                        }
-                        count++;
+                    catch (Exception e)
+                    {
+                        tag[count] = snapshot.child("comedy"+i).getValue().toString();
                     }
-                    for (i=Integer.parseInt(snapshot.child("sport").getValue().toString());i>=1;i--) {
-                        name[count] = snapshot.child("sport" + i).getValue().toString();
-                        link[count] = snapshot.child("sportlink" + i).getValue().toString();
-                        date[count] = "Sport";
-                        dbName[count]="sport"+i;
-                        try {
-                            tag[count] = snapshot.child("sporttag"+i).getValue().toString();
-                        }
-                        catch (Exception e)
-                        {
-                            tag[count] = snapshot.child("sport"+i).getValue().toString();
-                        }
-                        image[count] = snapshot.child("sports_image_link").getValue().toString();
-                        count++;
-                    }
-                    for (i=Integer.parseInt(snapshot.child("kids").getValue().toString());i>=1;i--) {
-                        name[count] = snapshot.child("kids" + i).getValue().toString();
-                        link[count] = snapshot.child("kidslink" + i).getValue().toString();
-                        date[count] = "Kids";
-                        dbName[count]="kids"+i;
-                        image[count] = snapshot.child("kidsimage"+i).getValue().toString();
-                        try {
-                            tag[count] = snapshot.child("kidstag"+i).getValue().toString();
-                        }
-                        catch (Exception e)
-                        {
-                            tag[count] = snapshot.child("kids"+i).getValue().toString();
-                        }
-                        count++;
-                    }
+                    count++;
                 }
-                else
-                {
-                    link = new String[Integer.parseInt(snapshot.child("news").getValue().toString())
-                            +Integer.parseInt(snapshot.child("classic").getValue().toString())];
-                    name = new String[Integer.parseInt(snapshot.child("news").getValue().toString())
-                            +Integer.parseInt(snapshot.child("classic").getValue().toString())];
-                    date = new String[Integer.parseInt(snapshot.child("news").getValue().toString())
-                            +Integer.parseInt(snapshot.child("classic").getValue().toString())];
-                    image = new String[Integer.parseInt(snapshot.child("news").getValue().toString())
-                            +Integer.parseInt(snapshot.child("classic").getValue().toString())];
-                    tag = new String[Integer.parseInt(snapshot.child("news").getValue().toString())
-                            +Integer.parseInt(snapshot.child("classic").getValue().toString())];
+                for (i=Integer.parseInt(snapshot.child("movie").getValue().toString());i>=1;i--) {
+                    name[count] = snapshot.child("movie" + i).getValue().toString();
+                    link[count] = snapshot.child("movielink" + i).getValue().toString();
+                    date[count] = "Movie : "+snapshot.child("moviedate"+i).getValue().toString();
+                    image[count] = snapshot.child("movieimage"+i).getValue().toString();
+                    dbName[count]="movie"+i;
+                    try {
+                        tag[count] = snapshot.child("movietag"+i).getValue().toString();
+                    }
+                    catch (Exception e)
+                    {
+                        tag[count] = snapshot.child("movie"+i).getValue().toString();
+                    }
+                    count++;
+                }
+                for (i=Integer.parseInt(snapshot.child("sport").getValue().toString());i>=1;i--) {
+                    name[count] = snapshot.child("sport" + i).getValue().toString();
+                    link[count] = snapshot.child("sportlink" + i).getValue().toString();
+                    date[count] = "Sport";
+                    dbName[count]="sport"+i;
+                    try {
+                        tag[count] = snapshot.child("sporttag"+i).getValue().toString();
+                    }
+                    catch (Exception e)
+                    {
+                        tag[count] = snapshot.child("sport"+i).getValue().toString();
+                    }
+                    image[count] = snapshot.child("sports_image_link").getValue().toString();
+                    count++;
+                }
+                for (i=Integer.parseInt(snapshot.child("kids").getValue().toString());i>=1;i--) {
+                    name[count] = snapshot.child("kids" + i).getValue().toString();
+                    link[count] = snapshot.child("kidslink" + i).getValue().toString();
+                    date[count] = "Kids";
+                    dbName[count]="kids"+i;
+                    image[count] = snapshot.child("kidsimage"+i).getValue().toString();
+                    try {
+                        tag[count] = snapshot.child("kidstag"+i).getValue().toString();
+                    }
+                    catch (Exception e)
+                    {
+                        tag[count] = snapshot.child("kids"+i).getValue().toString();
+                    }
+                    count++;
                 }
                 for (i=Integer.parseInt(snapshot.child("classic").getValue().toString());i>=1;i--) {
                     name[count] = snapshot.child("classic" + i).getValue().toString();
@@ -820,41 +805,8 @@ public class SearchActivity extends AppCompatActivity {
                         }
                     }
                     textView.setText("1 result");
-                    Intent intent;
-                    if(tempData[0].getLink().contains("(video)"))
-                    {
-                        intent=new Intent(getApplicationContext(),DescriptionActivity.class);
-                        intent.putExtra("link",tempData[0].getLink().substring("(video)".length()));
-                        intent.putExtra("name",tempData[0].getName());
-                        intent.putExtra("image",tempData[0].getImage());
-                        intent.putExtra("description",tempData[0].getDate());
-                        intent.putExtra("movie_db",tempData[0].getDataBaseName());
-                        intent.putExtra("add_to_quick_picks",tempData[0].getDataBaseName());
-                        if(dark) intent.putExtra("dark",true);
-                        startActivity(intent);
-                        finish();
-                    }
-                    else if(tempData[0].getLink().equals("webseries")){
-                        intent = new Intent(getApplicationContext(),SeasonPickerActivity.class);
-                        intent.putExtra("name",tempData[0].getName());
-                        intent.putExtra("dbName",tempData[0].getDataBaseName());
-                        intent.putExtra("image",tempData[0].getImage());
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        printHistory(tempData[0].getName());
-                        new Sync().uploadHistory(getApplicationContext());
-                        new Sync().addToQuickPicks(getApplicationContext(),tempData[0].getDataBaseName());
-                        startActivity(intent);
-                    }
-                    else if(!getIntent().hasExtra("personal"))
-                    {
-                        intent = new Intent(getApplicationContext(), WebActivity.class);
-                        intent.putExtra("link", tempData[0].getLink());
-                        printHistory(tempData[0].getName());
-                        new Sync().uploadHistory(getApplicationContext());
-                        new Sync().addToQuickPicks(getApplicationContext(),tempData[0].getDataBaseName());
-                        startActivity(intent);
-                        finish();
-                    }
+                    ((ContentAdapter)recyclerView.getAdapter()).clickItem(0);
+                    finish();
                 }
             }
 

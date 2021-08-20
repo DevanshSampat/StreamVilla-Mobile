@@ -3,13 +3,8 @@
 
     <translate
         android:duration="300"
-        android:fromXDelta="0"
-        android:toXDelta="0"
-        android:fromYDelta="0"
-        android:toYDelta="100"/>
-    <alpha
-        android:duration="150"
-        android:startOffset="150"
-        android:fromAlpha="1"
-        android:toAlpha="0"/>
+        android:fromXDelta="0%"
+        android:toXDelta="0%"
+        android:fromYDelta="0%"
+        android:toYDelta="100%"/>
 </set>
