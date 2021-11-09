@@ -12,8 +12,8 @@
         tools:targetApi="n_mr1">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.example.news"
-            android:targetClass="com.example.news.SearchActivity"/>
+            android:targetPackage="com.devansh.entertainment"
+            android:targetClass="com.devansh.entertainment.SearchActivity"/>
         <category android:name = "android.shortcut.search"/>
     </shortcut>
     <shortcut
@@ -26,8 +26,8 @@
         tools:targetApi="n_mr1">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.example.news"
-            android:targetClass="com.example.news.QueuedDownloadsActivity"/>
+            android:targetPackage="com.devansh.entertainment"
+            android:targetClass="com.devansh.entertainment.QueuedDownloadsActivity"/>
         <category android:name = "android.shortcut.download"/>
     </shortcut>
     <shortcut
@@ -40,8 +40,8 @@
         tools:targetApi="n_mr1">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.example.news"
-            android:targetClass="com.example.news.WatchlistActivity"/>
+            android:targetPackage="com.devansh.entertainment"
+            android:targetClass="com.devansh.entertainment.WatchlistActivity"/>
         <category android:name = "android.shortcut.watchlist"/>
     </shortcut>
 </shortcuts>

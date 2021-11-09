@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="wrap_content"
-    android:layout_marginVertical="5dp"
-    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="3dp"
+    android:layout_marginHorizontal="5dp"
     android:layout_height="wrap_content">
     <com.facebook.shimmer.ShimmerFrameLayout
         android:layout_width="wrap_content"
@@ -20,15 +20,15 @@
             android:foreground="?attr/selectableItemBackground"
             android:id="@+id/container_layout">
             <RelativeLayout
-                android:layout_width="200dp"
-                android:layout_height="125dp">
+                android:layout_width="180dp"
+                android:layout_height="110dp">
 
                 <androidx.cardview.widget.CardView
-                    android:layout_width="200dp"
-                    android:layout_height="125dp"
+                    android:layout_width="180dp"
+                    android:layout_height="110dp"
                     android:id="@+id/image_card"
                     app:cardBackgroundColor="@android:color/transparent"
-                    app:cardCornerRadius="20dp">
+                    app:cardCornerRadius="5dp">
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
@@ -40,32 +40,31 @@
                             android:scaleType="fitXY"
                             android:src="@mipmap/ic_launcher"
                             android:transitionName="image_movie" />
-                        <ProgressBar
-                            android:id="@+id/movie_progress"
-                            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+
+                        <TextView
+                            android:id="@+id/title"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_alignBottom="@id/image"
-                            android:layout_marginBottom="-7dp"
-                            android:progressBackgroundTint="#00FFFFFF"
-                            android:progressTint="@android:color/holo_red_light" />
+                            android:padding="5dp"
+                            android:background="@drawable/bg_small_item_text"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text="Content name"
+                            android:textColor="@android:color/white"
+                            android:textSize="14sp"
+                            android:transitionName="text_movie" />
                     </RelativeLayout>
                 </androidx.cardview.widget.CardView>
-            </RelativeLayout>
-            <TextView
+                </RelativeLayout>
+            <ProgressBar
+                android:id="@+id/movie_progress"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
-                android:text="Content name"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="3dp"
-                android:minLines="2"
-                android:maxLines="2"
-                android:textSize="18sp"
-                android:ellipsize="end"
-                android:transitionName="text_movie"
-                android:id="@+id/title"
-                android:layout_marginVertical="3dp"/>
+                android:scaleY="0.7"
+                android:progressBackgroundTint="#545454"
+                android:progressTint="@android:color/holo_red_light"/>
         </LinearLayout>
-    </com.facebook.shimmer.ShimmerFrameLayout>>
+    </com.facebook.shimmer.ShimmerFrameLayout>
 </LinearLayout>

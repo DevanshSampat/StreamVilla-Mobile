@@ -46,6 +46,15 @@
         android:layout_marginTop="20dp"
         android:hint="Extras"
         android:id="@+id/extras"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/date_and_time_picker"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Send Now"
+        android:textSize="20sp"
+        android:onClick="pickDate"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,12 +66,21 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="random"
-        android:id="@+id/random"/>
+        android:id="@+id/random"
+        android:visibility="gone"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="update"
         android:id="@+id/update"/>
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="18sp"
+        android:text="All notifications"
+        android:id="@+id/all"
+        android:onClick="showAllNotifications"/>
 </LinearLayout>

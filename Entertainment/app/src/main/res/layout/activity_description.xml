@@ -66,10 +66,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
+                    android:textColor="@android:color/holo_blue_dark"
                     android:textSize="20sp"
                     android:text="No Views"
                     android:layout_marginHorizontal="20dp"
-                    android:id="@+id/views"/>
+                    android:id="@+id/trending"/>
 
                 <GridLayout
                     android:layout_width="match_parent"
@@ -115,8 +116,8 @@
                                     android:id="@+id/watch_image"
                                     android:layout_width="50dp"
                                     android:layout_height="50dp"
-                                    android:layout_marginTop="10dp"
                                     android:layout_centerHorizontal="true"
+                                    android:layout_marginTop="10dp"
                                     android:scaleType="fitXY"
                                     android:src="@drawable/ic_baseline_play_arrow_24" />
 

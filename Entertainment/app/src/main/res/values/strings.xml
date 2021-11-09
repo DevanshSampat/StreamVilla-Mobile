@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Entertainment</string>
-    <string name="app_id">com.example.news</string>
+    <string name="app_name">StreamVilla</string>
+    <string name="app_id">com.devansh.entertainment</string>
     <string name="app_title">News</string>
     <string name="select">Select Your Preference</string>
     <string name="Watch">Watch live news</string>

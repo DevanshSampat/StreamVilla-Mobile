@@ -215,15 +215,16 @@
 
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
+
             <TextView
+                android:id="@+id/show_quick_and_trending"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/sign_out"
                 android:layout_centerHorizontal="true"
-                android:textColor="@android:color/holo_red_light"
-                android:textSize="16sp"
                 android:text="Click for more view options"
-                android:id="@+id/show_quick_and_trending"/>
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="16sp" />
             <ProgressBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -280,70 +281,102 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </RelativeLayout>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/holo_red_light"
-            android:textSize="20sp"
-            android:text="Recently Added"
-            android:id="@+id/recently_added"
-            android:layout_margin="10dp"
-            android:visibility="visible"/>
+
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/lv_container_of_all_recycler_views">
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/recycler_recently_added"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="20sp"
+                android:text="You may like"
+                android:id="@+id/recommended"
+                android:layout_margin="10dp"
+                android:visibility="gone"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/recycler_recommended"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:visibility="gone"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="20sp"
+                android:text="Recently Added"
+                android:id="@+id/recently_added"
+                android:layout_margin="10dp"
                 android:visibility="visible"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/recycler_recently_added"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:visibility="visible"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="20sp"
+                android:text="Quick Picks"
+                android:id="@+id/quick"
+                android:layout_margin="10dp"
+                android:visibility="visible"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/recycler"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:visibility="visible"/>
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="20sp"
+                android:text="Trending"
+                android:id="@+id/trend"
+                android:layout_margin="10dp"
+                android:visibility="visible"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/recycler_trend"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:visibility="visible"/>
+            </LinearLayout>
+
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/holo_red_light"
-            android:textSize="20sp"
-            android:text="Quick Picks"
-            android:id="@+id/quick"
-            android:layout_margin="10dp"
-            android:visibility="visible"/>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/recycler"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp"
-                android:visibility="visible"/>
-        </LinearLayout>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/holo_red_light"
-            android:textSize="20sp"
-            android:text="Trending"
-            android:id="@+id/trend"
-            android:layout_margin="10dp"
-            android:visibility="visible"/>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/recycler_trend"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp"
-                android:visibility="visible"/>
-        </LinearLayout>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -727,6 +760,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/add_content"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/user_details"
+                android:text="User Details"
+                android:layout_marginTop="20dp"
+                android:onClick="showUserIdDialog"
+                android:visibility="gone"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/user_details"
                 android:layout_marginEnd="40dp"
                 android:layout_marginStart="40dp"
                 android:layout_centerHorizontal="true"

@@ -13,8 +13,41 @@
         android:layout_height="wrap_content"
         android:textSize="30sp"
         android:textColor="@android:color/holo_red_light"
-        android:text="My Watchlist"
+        android:text="My List"
+        android:layout_gravity="center"
         android:layout_margin="10dp"/>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@android:color/holo_red_light"
+        android:id="@+id/pb_loading"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:id="@+id/empty_list_layout">
+        <ImageView
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:src="@drawable/ic_baseline_playlist_add_24"
+            android:onClick="goToSearch"/>
+        <TextView
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"
+            android:layout_marginTop="20dp"
+            android:onClick="goToSearch"
+            android:id="@+id/tv_empty_list"
+            android:text="Your List is empty. Tap the image to add items to List"/>
+
+    </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -3,19 +3,36 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/drawable/bg_small_item_text.xml" value="0.15648148148148147" />
         <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_description.xml" value="0.152" />
         <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_firebase_notification.xml" value="0.1358695652173913" />
         <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_main.xml" value="0.16621376811594202" />
+        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_raw_user_data.xml" value="0.2222222222222222" />
         <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_updater.xml" value="0.22592592592592592" />
+        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_user_details.xml" value="0.14492753623188406" />
         <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_video_player.xml" value="0.13858695652173914" />
+        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_watchlist.xml" value="0.14212962962962963" />
         <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/activity_web_series_description.xml" value="0.22592592592592592" />
+        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/dialog_user_id.xml" value="0.2222222222222222" />
         <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/recycle_item.xml" value="0.22592592592592592" />
-        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/small_recycle_item.xml" value="0.13858695652173914" />
+        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/small_recycle_item.xml" value="0.4" />
+        <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/user_data_item.xml" value="0.2222222222222222" />
         <entry key="..\:/Users/Sampats/Documents/GitHub/Streaming-App/Entertainment/app/src/main/res/layout/watch_pop_up.xml" value="0.13858695652173914" />
+        <entry key="app/src/main/res/drawable-v24/ic_baseline_delete_24_red.xml" value="0.190625" />
+        <entry key="app/src/main/res/drawable-v24/ic_baseline_edit_24.xml" value="0.190625" />
+        <entry key="app/src/main/res/drawable/splash_background.xml" value="0.33645833333333336" />
+        <entry key="app/src/main/res/layout/activity_description.xml" value="0.3203125" />
+        <entry key="app/src/main/res/layout/activity_firebase_notification.xml" value="0.17083333333333334" />
+        <entry key="app/src/main/res/layout/activity_list_display.xml" value="0.3203125" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.24796447076239822" />
+        <entry key="app/src/main/res/layout/activity_notification.xml" value="0.3203125" />
+        <entry key="app/src/main/res/layout/activity_web_series_description.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/notification_item.xml" value="0.3203125" />
+        <entry key="app/src/main/res/layout/recycle_item.xml" value="0.25815217391304346" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

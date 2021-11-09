@@ -51,6 +51,16 @@
                 android:text="No Description"
                 android:textSize="20sp" />
 
+            <TextView
+                android:id="@+id/trending"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_blue_dark"
+                android:layout_marginTop="5dp"
+                android:layout_marginHorizontal="20dp"
+                android:text="No Description"
+                android:textSize="20sp" />
+
             <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
