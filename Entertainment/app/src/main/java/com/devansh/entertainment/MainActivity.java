@@ -1725,36 +1725,7 @@ public class MainActivity extends AppCompatActivity {
                         restarted = false;
                         return;
                     }
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(calendar.get(Calendar.YEAR) + "/");
-                    if (calendar.get(Calendar.MONTH) + 1 < 10) sb.append("0");
-                    sb.append((calendar.get(Calendar.MONTH) + 1) + "/");
-                    if (calendar.get(Calendar.DAY_OF_MONTH) < 10) sb.append("0");
-                    sb.append(calendar.get(Calendar.DAY_OF_MONTH) + " at ");
-                    if (calendar.get(Calendar.HOUR_OF_DAY) < 10) sb.append("0");
-                    sb.append(calendar.get(Calendar.HOUR_OF_DAY) + ":");
-                    if (calendar.get(Calendar.MINUTE) < 10) sb.append("0");
-                    sb.append(calendar.get(Calendar.MINUTE));
-                    last_sign_in = sb.toString();
-                    if (hour >= 24) {
-                        calendar.set(Calendar.DAY_OF_YEAR, 1 + actualCalendar.get(Calendar.DAY_OF_YEAR));
-                        hour = hour % 24;
-                    }
-                    calendar.set(Calendar.HOUR_OF_DAY, hour);
-                    calendar.set(Calendar.MINUTE, minute);
-                    calendar.set(Calendar.SECOND, 0);
-                    calendar.set(Calendar.MILLISECOND, 0);
-                    Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
-                    intent.setFlags(Intent.FLAG_RECEIVER_FOREGROUND);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, (Build.VERSION.SDK_INT>=Build.VERSION_CODES.S)? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
-                    alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-                    String str = "";
-                    if (hour < 10) str = str + "0";
-                    str = str + hour + ":";
-                    if (minute < 10) str = str + "0";
-                    str = str + minute;
-                    next_notification = str;
-                }
+                 }
             }
 
             @Override

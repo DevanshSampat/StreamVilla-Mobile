@@ -27,16 +27,5 @@ public class BootReceiver extends BroadcastReceiver {
         if(UserName.getUsername(context).equals("devansh.sampat@gmail.com")&&Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(new Intent(context,RandomNotificationService.class));
         }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.MINUTE,0);
-        calendar.set(Calendar.HOUR_OF_DAY,13);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent alarmingIntent = new Intent(context,NotificationReceiver.class);
-        alarmingIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0,alarmingIntent,
-                Build.VERSION.SDK_INT>=Build.VERSION_CODES.S? PendingIntent.FLAG_IMMUTABLE :PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
-        Log.println(Log.ASSERT,"Alarm",calendar.get(Calendar.DAY_OF_MONTH)+"/"+(1+calendar.get(Calendar.MONTH))+" at "+calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE));
     }
 }

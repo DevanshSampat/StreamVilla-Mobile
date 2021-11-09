@@ -272,9 +272,6 @@
             android:resource="@array/preloaded_fonts" />
 
         <receiver
-            android:name=".NotificationReceiver"
-            android:enabled="true" />
-        <receiver
             android:name=".BootReceiver"
             android:enabled="true"
             android:exported="false"

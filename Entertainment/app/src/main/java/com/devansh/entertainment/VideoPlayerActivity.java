@@ -419,16 +419,21 @@ public class VideoPlayerActivity extends AppCompatActivity implements GestureDet
         }
 
         if(getIntent().hasExtra("description")){
-            String description = getIntent().getStringExtra("description");
-            ArrayList<String> arrayList = new ArrayList<>();
-            if(description.contains(":")) description = description.substring(description.indexOf(':')+2);
-            description = description.substring(7);
-            while (description.contains("/")){
-                arrayList.add(description.substring(0,description.indexOf('/')));
-                description = description.substring(description.indexOf('/')+1);
+            try {
+                String description = getIntent().getStringExtra("description");
+                ArrayList<String> arrayList = new ArrayList<>();
+                if (description.contains(":"))
+                    description = description.substring(description.indexOf(':') + 2);
+                description = description.substring(7);
+                while (description.contains("/")) {
+                    arrayList.add(description.substring(0, description.indexOf('/')));
+                    description = description.substring(description.indexOf('/') + 1);
+                }
+                arrayList.add(description);
+                new Sync().addToViewedGenres(arrayList);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            arrayList.add(description);
-            new Sync().addToViewedGenres(arrayList);
         }
 
         FirebaseDatabase.getInstance().getReference(".info/serverTimeOffset").addValueEventListener(new ValueEventListener() {
