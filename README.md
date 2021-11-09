@@ -42,6 +42,12 @@
     <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Video_Player.jpg?raw=true" width="500" height="220"/>
    </p>
  
+ # Trending
+  Shows what has been viewed most by the users in last 7 days
+  <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Trending.jpg?raw=true" width="200" height="400"/>
+  </p>
+ 
  # Additional feature for web series
   Next episode plays automatically in web series
   <p float="left">
