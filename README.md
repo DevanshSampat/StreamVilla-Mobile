@@ -42,3 +42,28 @@
     <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Video_Player.jpg?raw=true" width="500" height="220"/>
    </p>
  
+ # Trending
+  Shows what has been viewed most by the users in last 7 days
+  <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Trending.jpg?raw=true" width="200" height="400"/>
+  </p>
+ 
+# Watchlist
+ Not having time to watch, but interested for the movie/web series? Add it to your watchlist
+  <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Watchlist.jpg?raw=true" width="200" height="400"/>
+  </p>
+
+# Additional feature for web series
+  Next episode plays automatically in web series
+  <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Next_Episode.jpg?raw=true" width="500" height="220"/>
+  </p>
+  
+# Download Manager
+ Track your downloads, monitor progress and estimated time to complete and speed, and if not required, you can clear space
+ <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Download_Manager.jpg?raw=true" width="200" height="400"/>
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Downloads.jpg?raw=true" width="200" height="400"/>
+  </p>
+  
