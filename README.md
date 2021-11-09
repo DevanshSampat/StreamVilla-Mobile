@@ -11,7 +11,7 @@
  # Categories
   6 different categories you can watch from
   <p float="left">
-   <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Categories.jpg?raw=true" width="200" height="400"/>
+   <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Categories.jpg?raw=true" width="200" height="320"/>
   </p>
   
  # Movies
