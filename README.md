@@ -13,6 +13,7 @@
   <p float="left">
    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Categories.jpg?raw=true" width="200" height="400"/>
   </p>
+  
  # Movies
   Beautifully shows the movie details you need like year, genre, the time for which you have watched it and a small information of the movie
   <p float="left">
