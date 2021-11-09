@@ -34,3 +34,11 @@
     <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Web_Series_Episodes.jpg?raw=true" width="200" height="400"/>
   </p>
    
+ # Video Player
+  A multi-functional video player with support for multiple audio tracks and subtitles, swipe gestures to adjust volume and brightness and a lock button to prevent accidental touches.
+  Can even play local videos, like videos outside app from device storage.
+  Also supports Picture-in-Picture mode.
+   <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Video_Player.jpg?raw=true" width="200" height="400"/>
+   </p>
+ 
