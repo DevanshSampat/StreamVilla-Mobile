@@ -42,3 +42,16 @@
     <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Video_Player.jpg?raw=true" width="500" height="220"/>
    </p>
  
+ # Additional feature for web series
+  Next episode plays automatically in web series
+  <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Next_Episode.jpg?raw=true" width="500" height="220"/>
+  </p>
+  
+# Download Manager
+ Track your downloads, monitor progress and estimated time to complete and speed, and if not required, you can clear space
+ <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Download_Manager.jpg?raw=true" width="200" height="400"/>
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Downloads.jpg?raw=true" width="200" height="400"/>
+  </p>
+ 
