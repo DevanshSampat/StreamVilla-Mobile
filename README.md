@@ -31,6 +31,6 @@
    <p float="left">
     <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Web_Series.jpg?raw=true" width="200" height="400"/>
     <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Web_Series_Seasons.jpg?raw=true" width="200" height="400"/>
-    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/web_Series_Episodes.jpg?raw=true" width="200" height="400"/>
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Web_Series_Episodes.jpg?raw=true" width="200" height="400"/>
   </p>
    
