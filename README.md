@@ -61,3 +61,9 @@
     <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Downloads.jpg?raw=true" width="200" height="400"/>
   </p>
  
+# Watchlist
+ Not having time to watch, but interested for the movie/web series? Add it to your watchlist
+  <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Watchlist.jpg?raw=true" width="200" height="400"/>
+  </p>
+ 
