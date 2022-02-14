@@ -23,7 +23,7 @@
  # Movies
   Beautifully shows the movie details you need like year, genre, the time for which you have watched it and a small information of the movie
   <p float="left">
-   <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Movie_!.jpg?raw=true" width="200" height="420"/>
+   <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Movie_1.jpg?raw=true" width="200" height="420"/>
    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Movie_2.jpg?raw=true" width="200" height="420"/>
   </p>
 
@@ -40,7 +40,7 @@
   Can even play local videos, like videos outside app from device storage.
   Also supports Picture-in-Picture mode.
    <p float="left">
-    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Video_Player_Portrait.jpg?raw=true" width="200" height="420"/>
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Video_Player_Portrait.png?raw=true" width="200" height="420"/>
     <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Video_Player.jpg?raw=true" width="500" height="220"/>
    </p>
  
