@@ -39,6 +39,7 @@
   Can even play local videos, like videos outside app from device storage.
   Also supports Picture-in-Picture mode.
    <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Video_Player_Portrait.jpg?raw=true" width="200" height="420"/>
     <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Video_Player.jpg?raw=true" width="500" height="220"/>
    </p>
  
