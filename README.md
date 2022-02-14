@@ -16,14 +16,15 @@
   
  # Native Search Bar with Voice Search
   <p float="left">
-    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Movie_Search.jpg?raw=true" width="200" height="400"/>
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Movie_Search.png?raw=true" width="200" height="400"/>
     <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Voice_Search.jpg?raw=true" width="200" height="400"/>
   </p>
   
  # Movies
   Beautifully shows the movie details you need like year, genre, the time for which you have watched it and a small information of the movie
   <p float="left">
-   <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Movie.jpg?raw=true" width="200" height="400"/>
+   <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Movie_!.jpg?raw=true" width="200" height="420"/>
+   <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Movie_2.jpg?raw=true" width="200" height="420"/>
   </p>
 
  # Web Series
