@@ -16,8 +16,7 @@
   
  # Native Search Bar with Voice Search
   <p float="left">
-    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Movie_Search.png?raw=true" width="200" height="400"/>
-    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Voice_Search.jpg?raw=true" width="200" height="400"/>
+   <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Voice_Search.jpg?raw=true" width="200" height="400"/>
   </p>
   
  # Movies
