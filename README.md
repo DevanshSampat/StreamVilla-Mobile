@@ -40,7 +40,7 @@
   Also supports Picture-in-Picture mode.
    <p float="left">
     <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Video_Player_Portrait.png?raw=true" width="200" height="420"/>
-    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Video_Player.png?raw=true" width="500" height="220"/>
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Video_Player.png?raw=true" width="470" height="220"/>
    </p>
  
  # Trending
