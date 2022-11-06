@@ -55,6 +55,31 @@
     <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Watchlist.jpg?raw=true" width="200" height="400"/>
   </p>
 
+# Smart Dynamic Lists
+ A prediction is made considering your recently watched content, to make sure which actor in which genre is the most you like 
+  <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Dynamic_List.png?raw=true" width="200" height="400"/>
+  </p>
+  
+# Actor wise content sorting
+ To make things easier for you, when you click on any actor in the cast section of a movie or series description, this screen shows up with all his/her movies and series 
+  <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Actor_Wise_Content.png?raw=true" width="200" height="400"/>
+  </p>
+
+# Smart Features
+ A section where privacy, security and ease of access is focused. Each feature is self explanatory in the image.
+  <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/Smart_Features.png?raw=true" width="200" height="500"/>
+  </p>
+  
+# Nearby TV playback control
+ If enabled, this shows you a notification whenever a TV on the same WiFi network is playing something on StreamVilla app. This allows you to play/pause, switch between episodes, forward or rewind the video and even control the subtitles. Also a close button helps to stop playback on TV.
+  <p float="left">
+    <img src="https://github.com/DevanshSampat/StreamVilla-mobile/blob/main/Entertainment/app/Screenshots/TV_Playback_control.png?raw=true" width="500" height="250"/>
+  </p>
+ 
+  
 # Download Manager
  Track your downloads, monitor progress and estimated time to complete and speed, and if not required, you can clear space
  <p float="left">
