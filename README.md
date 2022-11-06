@@ -1,6 +1,9 @@
 # StreamVilla
  A mobile OTT app for streaming movies, web series and much more
- 
+ <p float="left">
+   <img src="https://github.com/DevanshSampat/StreamVilla-Mobile/blob/main/Entertainment/app/src/main/res/drawable/app_icon.jpg?raw=true" width="400" height="400"/>
+  </p>
+
  # Two themes
   Light mode for bright ones and Dark mode for code geeks
   <p float="left">
